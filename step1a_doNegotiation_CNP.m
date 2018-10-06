@@ -38,6 +38,25 @@ for i = 1:length(communicationCandidates(:,1))
     % Determine the number of communication candidates for flight i.
     nCandidates = nnz(communicationCandidates(i,2:end)); 
 
+    %Determine if flight i will be Manager or contractor
+    manager_amount = 0;
+    for j = 2:nCandidates +1 
+        acNr2 = communicationCandidates(i,j);
+        if flightsData(acNr2,29)== 1
+            manager_amount = manager_amount+1;
+        end
+        
+    end
+    
+    manager_percentage = manager_amount/nCandidates ;
+    contract = 0.8;
+    
+    
+    if manager_strive_amount > manager_percentage
+        flightsData(acNr1,29) = 1;
+        flightsData(acNr1,30) = contract;
+    end 
+    
     % Loop over all candidates of flight i.
     for j = 2:nCandidates+1
         % Store flight ID of candidate flight j in variable.
