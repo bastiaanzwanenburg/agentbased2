@@ -91,6 +91,12 @@ function flightsInitialData = generateFlights(nAircraft,Vmax,MFuelSolo, ...
 % current formation. The default code distributes the future fuel savings
 % between the flights of the formation based on property 19 (weight
 % factor).
+% 29: Column that indicates if this flight (agent) is a Manager or
+% Auctioneer, if 1 = manager / auctioneer if 0 = contractor 
+% 30: If agent is manager, this column contains the contract that the
+% manager puts out to all adjecent agents 
+% 31: If agent is contractor this column cointains the bid that the agent
+% makes back to the contractor. 
 
 % special cases: 
 % * More dummy flights may be required to cover aircraft that switch
