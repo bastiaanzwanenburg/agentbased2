@@ -3,7 +3,7 @@ function [fuelSavingsTotalPct,fuelSavingsAlliancePct, ...
     calculateResults(nAircraft,flightsDataRecordings,Wfinal,Vmax, ...
     fuelSavingsTotal)
 %% calculateResults.m description
-% This function determines the realized fuel savings, the extra flight time
+% NEW this function determines the realized fuel savings, the extra flight time
 % due to formation flying, and the extra distance flown due to formation
 % flying. It does this by first calculating the fuel consumption, flight
 % distance, and flight time, if only solo flights were flown. Next, it
