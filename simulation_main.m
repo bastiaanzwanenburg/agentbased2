@@ -6,7 +6,7 @@
 % step3_determineFormationLeaders.m, final1_visualizeAirports.m,
 % final2_visualizeFlights.m, and final3_concludeSimulation.m. Each of these
 % files may contain (multiple) help functions.
-
+ % vs
 % The main file you will work in is step1a_doNegotiation_*.m. You are
 % allowed to make changes to all other functions, as long as you clearly
 % comment the code and document the changes. Examples of why such changes
