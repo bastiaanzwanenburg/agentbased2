@@ -31,6 +31,8 @@
 % step1c_updateProperties.m.
 
 %% Loop through the combinations of flights that are allowed to communicate.
+manager_strive_amount = 0.2;
+
 for i = 1:length(communicationCandidates(:,1))     
     % Store flight ID of flight i in variable.
     acNr1 = communicationCandidates(i,1);     
@@ -57,6 +59,13 @@ for i = 1:length(communicationCandidates(:,1))
         flightsData(acNr1,30) = contract;
     end 
     
+    %if contractor
+    if flightsData(i,29) = 0;
+        
+    end
+    
+        
+        
     % Loop over all candidates of flight i.
     for j = 2:nCandidates+1
         % Store flight ID of candidate flight j in variable.
