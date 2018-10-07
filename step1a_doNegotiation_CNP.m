@@ -82,7 +82,7 @@ for i = 1:length(communicationCandidates(:,1))
                 % the formation route is accepted. This shows the greedy
                 % algorithm, where the first formation with positive fuel
                 % savings is accepted.
-                if potentialFuelSavings > 0     
+                if potentialFuelSavings > 0 && timeWithinLimits == 1    
                     % In the greedy algorithm the fuel savings are divided
                     % equally between acNr1 and acNr2, according to the
                     % formation size of both flights. In the CNP the value of
@@ -108,9 +108,7 @@ for i = 1:length(communicationCandidates(:,1))
             else
                 fuelSavingsOffer = potentialFuelSavings * 0.25;
             end
-            
-            %dFS formula from the greedy algorithm. Tune this.
-
+   
             divisionFutureSavings = flightsData(acNr1,19)/ ...
                 (flightsData(acNr1,19) + flightsData(acNr2,19));
             %make bid with all necessary info
@@ -133,20 +131,20 @@ for i = 1:length(communicationCandidates(:,1))
             %fuelsaving
             [~, idWinner] = max(bidbook(receivedBids,2)); %get the best bid
         
-        
-            acNr1 = receivedBids(idWinner);
-            acNr2 = bidbook(receivedBids(idWinner),1);
-            fuelSavingsOffer = bidbook(receivedBids(idWinner),2);
-            divisionFutureSavings = bidbook(receivedBids(idWinner),3); 
-            Xjoining = bidbook(receivedBids(idWinner),4);
-            Yjoining = bidbook(receivedBids(idWinner),5);
-            Xsplitting = bidbook(receivedBids(idWinner),6);
-            Ysplitting = bidbook(receivedBids(idWinner),7);
-            VsegmentAJ_acNr1 = bidbook(receivedBids(idWinner),8);
-            VsegmentBJ_acNr2 = bidbook(receivedBids(idWinner),9);
-            timeAdded_acNr1 = bidbook(receivedBids(idWinner),10);
-            timeAdded_acNr2 = bidbook(receivedBids(idWinner),11);
-            potentialFuelSavings = bidbook(receivedBids(idWinner),12);
+            idWinner = receivedBids(idWinner);
+            acNr1 = idWinner;
+            acNr2 = bidbook(idWinner,1);
+            fuelSavingsOffer = bidbook(idWinner,2);
+            divisionFutureSavings = bidbook(idWinner,3); 
+            Xjoining = bidbook(idWinner,4);
+            Yjoining = bidbook(idWinner,5);
+            Xsplitting = bidbook(idWinner,6);
+            Ysplitting = bidbook(idWinner,7);
+            VsegmentAJ_acNr1 = bidbook(idWinner,8);
+            VsegmentBJ_acNr2 = bidbook(idWinner,9);
+            timeAdded_acNr1 = bidbook(idWinner,10);
+            timeAdded_acNr2 = bidbook(idWinner,11);
+            potentialFuelSavings = bidbook(idWinner,12);
             step1c_updateProperties %do this only if a deal is made
 
         end
