@@ -92,11 +92,9 @@ function flightsInitialData = generateFlights(nAircraft,Vmax,MFuelSolo, ...
 % between the flights of the formation based on property 19 (weight
 % factor).
 % 29: Column that indicates if this flight (agent) is a Manager or
-% Auctioneer, if 1 = manager / auctioneer if 0 = contractor 
-% 30: If agent is manager, this column contains the contract that the
-% manager puts out to all adjecent agents 
-% 31: If agent is contractor this column cointains the bid that the agent
-% makes back to the contractor. 
+% Auctioneer, if 1 = manager / auctioneer if 0 = contractor (so agents are
+% contractors by default)
+
 
 % special cases: 
 % * More dummy flights may be required to cover aircraft that switch
@@ -124,7 +122,9 @@ destinationAirports = [destinationAirportsX destinationAirportsY];
 
 % Predefine for performance. 2*nAircraft additional rows are created as
 % dummy flights. These dummy flights act as formation navigators.
-flightsInitialData = zeros(3*nAircraft,28); 
+flightsInitialData = zeros(3*nAircraft,29); 
+bids = zeros(1,7);
+bidbook = zeros(nAircraft, 12);
 
 %% Generate the initial properties for all flights. 
 % Each row indicates the properties for one flight.

@@ -31,77 +31,128 @@
 % step1c_updateProperties.m.
 
 %% Loop through the combinations of flights that are allowed to communicate.
-manager_strive_amount = 0.2;
 
-for i = 1:length(communicationCandidates(:,1))     
+
+for i = 1:length(communicationCandidates(:,1))   
+    %make new biddingcandidates list in which a contractor can store
+    %potential bids
+  
     % Store flight ID of flight i in variable.
-    acNr1 = communicationCandidates(i,1);     
-    
+    acNr1 = communicationCandidates(i,1);
     % Determine the number of communication candidates for flight i.
     nCandidates = nnz(communicationCandidates(i,2:end)); 
-
-    %Determine if flight i will be Manager or contractor
-    manager_amount = 0;
-    for j = 2:nCandidates +1 
-        acNr2 = communicationCandidates(i,j);
-        if flightsData(acNr2,29)== 1
-            manager_amount = manager_amount+1;
-        end
-        
-    end
     
-    manager_percentage = manager_amount/nCandidates ;
-    contract = 0.8;
-    
-    
-    if manager_strive_amount > manager_percentage
-        flightsData(acNr1,29) = 1;
-        flightsData(acNr1,30) = contract;
-    end 
-    
-    %if contractor
-    if flightsData(i,29) = 0;
-        
-    end
-    
-        
-        
-    % Loop over all candidates of flight i.
+    % determine if a flight should become manager
+    n_managers = 0;
+    n_contractors = 0;
     for j = 2:nCandidates+1
-        % Store flight ID of candidate flight j in variable.
-        acNr2 = communicationCandidates(i,j);  
+       acNr2 = communicationCandidates(i,j);  
+
+       if(flightsData(acNr2,29)) == 1
+           n_managers = n_managers + 1;
+       else
+           n_contractors = n_contractors + 1;
+       end
+   end
+   ratio_managers_contractors = n_managers / (n_contractors + n_managers);
+       
+   if ratio_managers_contractors < 0.3
+       %if there are only a few managers in the area, become manager
+       %and ditch all bids made by me
+       flightsData(acNr1, 29) = 1;
+       bidbook(acNr1,:) = zeros(1,12);
+   end
+     
+    %START code for contractors
+    if(flightsData(acNr1,29)==0)
+        clear potentialManagers;
+        potentialManagers = zeros(nCandidates,3);
         
-        % Check whether the flights are still available for communication.
-        if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1             
-            % This file contains code to perform the routing and
-            % synchronization, and to determine the potential fuel savings.
-            step1b_routingSynchronizationFuelSavings
+        for j = 2:nCandidates+1
+            % Store flight ID of candidate flight j in variable.
+            acNr2 = communicationCandidates(i,j);  
 
-            % If the involved flights can reduce their cumulative fuel burn
-            % the formation route is accepted. This shows the greedy
-            % algorithm, where the first formation with positive fuel
-            % savings is accepted.
-            if potentialFuelSavings > 0     
-                % In the greedy algorithm the fuel savings are divided
-                % equally between acNr1 and acNr2, according to the
-                % formation size of both flights. In the CNP the value of
-                % fuelSavingsOffer is decided upon by the contractor agent.
-                fuelSavingsOffer = potentialFuelSavings* ...
-                    flightsData(acNr1,19)/ ...
-                    (flightsData(acNr1,19) + flightsData(acNr2,19));
+            % Check whether the flights are still available for communication.
+            if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1             
+                % This file contains code to perform the routing and
+                % synchronization, and to determine the potential fuel savings.
+                step1b_routingSynchronizationFuelSavings
 
-                % In the greedy algorithm the future fuel savings are
-                % divided equally between acNr1 and acNr2, according to the
-                % formation size of both flights. In the CNP the value of
-                % divisionFutureSavings is decided upon by the contractor
-                % agent.
-                divisionFutureSavings = flightsData(acNr1,19)/ ...
-                    (flightsData(acNr1,19) + flightsData(acNr2,19));
-                
-                % Update the relevant flight properties for the formation
-                % that is accepted.
-                step1c_updateProperties
-            end          
+                % If the involved flights can reduce their cumulative fuel burn
+                % the formation route is accepted. This shows the greedy
+                % algorithm, where the first formation with positive fuel
+                % savings is accepted.
+                if potentialFuelSavings > 0     
+                    % In the greedy algorithm the fuel savings are divided
+                    % equally between acNr1 and acNr2, according to the
+                    % formation size of both flights. In the CNP the value of
+                    % fuelSavingsOffer is decided upon by the contractor agent.
+                    potentialManagers(j,1) = acNr1;
+                    potentialManagers(j,2) = acNr2;
+                    potentialManagers(j,3) = potentialFuelSavings;  
+                end          
+            end
+        end
+
+        %get manager with best fuelsaving and make bid
+        %but first determine if there are any biddingcandidates at all
+        if any(any(potentialManagers)) == 1
+            [~, biddingID] = max(potentialManagers(:,3));
+            acNr2 = potentialManagers(biddingID,2);
+            potentialFuelSavings = potentialManagers(biddingID,3);
+            %depending on ratio, make a bid
+            if ratio_managers_contractors < 0.33333
+                fuelSavingsOffer = potentialFuelSavings * 0.8;
+            elseif ratio_managers_contractors < 0.7
+                fuelSavingsOffer = potentialFuelSavings * 0.5;
+            else
+                fuelSavingsOffer = potentialFuelSavings * 0.25;
+            end
+            
+            %dFS formula from the greedy algorithm. Tune this.
+
+            divisionFutureSavings = flightsData(acNr1,19)/ ...
+                (flightsData(acNr1,19) + flightsData(acNr2,19));
+            %make bid with all necessary info
+            bid = [acNr2, fuelSavingsOffer, divisionFutureSavings, Xjoining, ...
+                Yjoining, Xsplitting, Ysplitting, VsegmentAJ_acNr1, ...
+                VsegmentBJ_acNr2, timeAdded_acNr1, timeAdded_acNr2, potentialFuelSavings];
+            bidbook(acNr1,:) = bid;
         end
     end
+        
+    if(flightsData(acNr1, 29)==1)
+        %if manager
+        % go through received bids
+        % accept bids with highest fuel offering
+
+        %find bids that are sent to this contractor
+        receivedBids = find(bidbook(:,1)==acNr1);
+        if receivedBids > 0 
+            %if have received bids, find bid with highest offered
+            %fuelsaving
+            [~, idWinner] = max(bidbook(receivedBids,2)); %get the best bid
+        
+        
+            acNr1 = receivedBids(idWinner);
+            acNr2 = bidbook(receivedBids(idWinner),1);
+            fuelSavingsOffer = bidbook(receivedBids(idWinner),2);
+            divisionFutureSavings = bidbook(receivedBids(idWinner),3); 
+            Xjoining = bidbook(receivedBids(idWinner),4);
+            Yjoining = bidbook(receivedBids(idWinner),5);
+            Xsplitting = bidbook(receivedBids(idWinner),6);
+            Ysplitting = bidbook(receivedBids(idWinner),7);
+            VsegmentAJ_acNr1 = bidbook(receivedBids(idWinner),8);
+            VsegmentBJ_acNr2 = bidbook(receivedBids(idWinner),9);
+            timeAdded_acNr1 = bidbook(receivedBids(idWinner),10);
+            timeAdded_acNr2 = bidbook(receivedBids(idWinner),11);
+            potentialFuelSavings = bidbook(receivedBids(idWinner),12);
+            step1c_updateProperties %do this only if a deal is made
+
+        end
+                   
+    end
+            
+    
+
 end
