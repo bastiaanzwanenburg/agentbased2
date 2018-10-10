@@ -1,4 +1,5 @@
 %% step1a_doNegotiation_CNP.m description
+%GIT TEST
 % Add your CNP agent models and edit this file to create your CNP. 
 
 % This file uses the matrix generated in determineCommunicationCandidates.m
