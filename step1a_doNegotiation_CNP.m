@@ -31,7 +31,7 @@
 % step1c_updateProperties.m.
 
 %% Loop through the combinations of flights that are allowed to communicate.
-
+%test 
 
 for i = 1:length(communicationCandidates(:,1))   
     %make new biddingcandidates list in which a contractor can store
