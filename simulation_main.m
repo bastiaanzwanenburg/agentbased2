@@ -55,7 +55,7 @@
 % * Flights must be eastbound for the code to work.
 
 %% Clear workspace and command window, add paths for help functions and files.
- 
+tic
 % Close figures.
 close all
 % Clear workspace.
@@ -132,7 +132,7 @@ for simrun = 1:nSimulations
         step3_determineFormationLeaders;
 
         % Iterate to the next time step.
-        t = t+1;                                                                    
+        t = t+1;                                                            
 
         % Store the data in time step t of the flight recorders.
         flightsDataRecordings(t,:,:) = flightsData;                                    
@@ -150,3 +150,4 @@ for simrun = 1:nSimulations
     % flying.
     final3_concludeSimulation;
 end
+toc

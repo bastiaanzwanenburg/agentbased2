@@ -89,7 +89,11 @@ for i = 1:length(communicationCandidates(:,1))
                     % fuelSavingsOffer is decided upon by the contractor agent.
                     potentialManagers(j,1) = acNr1;
                     potentialManagers(j,2) = acNr2;
-                    potentialManagers(j,3) = potentialFuelSavings;  
+                    potentialManagers(j,3) = potentialFuelSavings;
+                    potentialBid = [acNr2, fuelSavingsOffer, divisionFutureSavings, Xjoining, ...
+                                    Yjoining, Xsplitting, Ysplitting, VsegmentAJ_acNr1, ...
+                                        VsegmentBJ_acNr2, timeAdded_acNr1, timeAdded_acNr2, potentialFuelSavings];
+                    
                 end          
             end
         end
@@ -130,21 +134,30 @@ for i = 1:length(communicationCandidates(:,1))
             %if have received bids, find bid with highest offered
             %fuelsaving
             [~, idWinner] = max(bidbook(receivedBids,2)); %get the best bid
-        
-            idWinner = receivedBids(idWinner);
-            acNr1 = idWinner;
-            acNr2 = bidbook(idWinner,1);
-            fuelSavingsOffer = bidbook(idWinner,2);
-            divisionFutureSavings = bidbook(idWinner,3); 
-            Xjoining = bidbook(idWinner,4);
-            Yjoining = bidbook(idWinner,5);
-            Xsplitting = bidbook(idWinner,6);
-            Ysplitting = bidbook(idWinner,7);
-            VsegmentAJ_acNr1 = bidbook(idWinner,8);
-            VsegmentBJ_acNr2 = bidbook(idWinner,9);
-            timeAdded_acNr1 = bidbook(idWinner,10);
-            timeAdded_acNr2 = bidbook(idWinner,11);
-            potentialFuelSavings = bidbook(idWinner,12);
+            %acNr1 is manager and is already defined
+            %acNr2 is contractor and follows from first column of table
+            
+            
+            acNr2 = receivedBids(idWinner);
+            if not(bidbook(acNr2, 1) == acNr1)
+                fprintf("ERROR");
+                break;
+            end
+            fuelSavingsOffer = bidbook(acNr2,2);
+            divisionFutureSavings = bidbook(acNr2,3); 
+%             Xjoining = bidbook(acNr2,4);
+%             Yjoining = bidbook(acNr2,5);
+%             Xsplitting = bidbook(acNr2,6);
+%             Ysplitting = bidbook(acNr2,7);
+%             VsegmentAJ_acNr1 = bidbook(acNr2,8);
+%             VsegmentBJ_acNr2 = bidbook(acNr2,9);
+%             timeAdded_acNr1 = bidbook(acNr2,10);
+%             timeAdded_acNr2 = bidbook(acNr2,11);
+%             potentialFuelSavings = bidbook(acNr2,12);
+            
+            step1b_routingSynchronizationFuelSavings
+
+            
             step1c_updateProperties %do this only if a deal is made
 
         end
