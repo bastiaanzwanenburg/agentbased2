@@ -132,7 +132,6 @@ for i = 1:length(communicationCandidates(:,1))
         %find bids that are sent to this contractor
         receivedBids = find(bidbook(:,1)==acNr1);
         if receivedBids > 0 
-            accept_deal = 0; %initially, don't accept a deal unless this is changed.
             %if have received bids, find bid with highest offered
             %fuelsaving
             [~, idWinner] = max(bidbook(receivedBids,2)); %get the best bid
@@ -146,21 +145,12 @@ for i = 1:length(communicationCandidates(:,1))
                 break;
             end
             fuelSavingsOffer = bidbook(acNr2,12);
-            potentialFuelSavings = bidbook(acNr2,2);
-
-            pctFuelSavingsOffer = fuelSavingsOffer / potentialFuelSavings;
-            %if more managers than contractors, be greedy
-            if ratio_managers_contractors > 0.8 && pctFuelSavingsOffer > 0.3
-                accept_deal = 1;
-            elseif ratio_managers_contractors > 0.5 && pctFuelSavingsOffer > 0.5
-                accept_deal = 1;
-            elseif ratio_managers_contractors > 0.2 && pctFuelSavingsOffer > 0.6
-                accept_deal = 1;
-            end
-                
+            
+            ratio_managers_contractors
             
             
             %we stored all sync info in the bidbook, get that.
+            potentialFuelSavings = bidbook(acNr2,2);
             divisionFutureSavings = bidbook(acNr2,3); 
             Xjoining = bidbook(acNr2,4);
             Yjoining = bidbook(acNr2,5);
@@ -170,10 +160,13 @@ for i = 1:length(communicationCandidates(:,1))
             VsegmentBJ_acNr2 = bidbook(acNr2,9);
             timeAdded_acNr1 = bidbook(acNr2,10);
             timeAdded_acNr2 = bidbook(acNr2,11);
-                     
-            if accept_deal == 1
-                step1c_updateProperties %do this only if a deal is made
-            end
+            
+            
+            
+            fuelSavinsgPerDeal = fuelSavingsPerDeal(
+         
+            
+            step1c_updateProperties %do this only if a deal is made
 
         end
                    

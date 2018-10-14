@@ -16,6 +16,7 @@ fuelSavingsTotalPctPerRun = zeros(nSimulations,1); % [%]
 
 % Percentage of the total fuel savings that went to the alliance.
 fuelSavingsAlliancePctPerRun = zeros(nSimulations,1); % [%] 
+fuelSavingsPerDeal = zeros(nAircraft,1);
 
 % Percentage of the total fuel savings that went to the non-alliance
 % flights.
