@@ -122,7 +122,7 @@ destinationAirports = [destinationAirportsX destinationAirportsY];
 
 % Predefine for performance. 2*nAircraft additional rows are created as
 % dummy flights. These dummy flights act as formation navigators.
-flightsInitialData = zeros(3*nAircraft,29); 
+flightsInitialData = zeros(3*nAircraft,30); 
 bids = zeros(1,7);
 bidbook = zeros(nAircraft, 12);
 

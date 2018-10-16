@@ -1,5 +1,5 @@
 function [Xjoining,Yjoining,Xsplitting,Ysplitting] = ...
-    determineGeometricRouting(wAC,wBD,wDuo,Xordes,Yordes)
+    determineGeometricRouting(wAC,wBD,wDuo,Xordes,Yordes,Vmax,dt)
 %% determineGeometricRouting.m description
 % Determines the joining- and splitting point for a flight formation route
 % of flight 1 and 2. It is based on their current location, and their
@@ -12,7 +12,9 @@ function [Xjoining,Yjoining,Xsplitting,Ysplitting] = ...
 % wBD (weight factor of flight 2 from point B to D),
 % wDuo (weight factor of the formation flight segment),
 % Xordes (current and destination x-coordinates of both aircraft),
-% Yordes (current and destination y-coordinates of both aircraft).
+% Yordes (current and destination y-coordinates of both aircraft),
+% Vmax,
+% dt.
 
 % outputs: 
 % Xjoining (x-coordinate of the joining point),
@@ -54,32 +56,42 @@ if Xordes(1) < Xordes(3) && Xordes(2) < Xordes(4)
     B = [Xordes(2),Yordes(2)];
     % Distance between flight 1 and 2. 
     AB = sqrt((A(2)-B(2))^2+(A(1)-B(1))^2);
-    % Distance between current location of flight 1 and a joining point P
-    % to the right of the segment AB. Valid for when wAC = wBD.
-    AP_symmetric = 0.5*AB/sind(0.5*formationAngle);
-    % Distance between current location of flight 1 and a joining point P'
-    % to the left of the segment AB. Valid for when wAC = wBD.
-    APac_symmetric = 0.5*AB/sind(0.5*(180-formationAngle));
-    % Determine the two possible locations of joining point P.
-    [Px,Py] = circcirc(A(1),A(2),AP_symmetric,B(1),B(2),AP_symmetric); 
-    % Determine the two possible locations of joining point P'.
-    [Pacx,Pacy] = circcirc(A(1),A(2),APac_symmetric,B(1),B(2),APac_symmetric); 
-    % Determine the radius of the circle on which the joining points lie.
-    Radius_Pcircle = sqrt((Px(1)-Pacx(2))^2+(Py(1)-Pacy(2))^2)/2;
- 
-    % Weighted back vertice determination.
-    % Determine the two radii of back vertice determination circles.
-    AXbv = (AB/wDuo)*wBD; 
-    BXbv = (AB/wDuo)*wAC;
-    % Determine the two possible weighted back vertices.
-    [WBVxO,WBVyO] = circcirc(A(1),A(2),AXbv,B(1),B(2),BXbv); 
+    % Only if flight 1 and 2 are not at the same current location.
+    if AB > 1e-5
+        % Distance between current location of flight 1 and a joining point
+        % P to the right of the segment AB. Valid for when wAC = wBD.
+        AP_symmetric = 0.5*AB/sind(0.5*formationAngle);
+        % Distance between current location of flight 1 and a joining point
+        % P' to the left of the segment AB. Valid for when wAC = wBD.
+        APac_symmetric = 0.5*AB/sind(0.5*(180-formationAngle));
+        % Determine the two possible locations of joining point P.
+        [Px,Py] = circcirc(A(1),A(2),AP_symmetric,B(1),B(2),AP_symmetric); 
+        % Determine the two possible locations of joining point P'.
+        [Pacx,Pacy] = circcirc(A(1),A(2),APac_symmetric,B(1),B(2),APac_symmetric); 
+        % Determine the radius of the circle on which the joining points
+        % lie.
+        Radius_Pcircle = sqrt((Px(1)-Pacx(2))^2+(Py(1)-Pacy(2))^2)/2;
 
-    % Determine center of circle on which the joining points lie.
-    % Use the leftmost P' as center.
-    if Pacx(2) > Pacx(1)
-        center_Pcircle = [(Px(2)+Pacx(1))/2,(Py(2)+Pacy(1))/2]; 
+        % Weighted back vertice determination.
+        % Determine the two radii of back vertice determination circles.
+        AXbv = (AB/wDuo)*wBD; 
+        BXbv = (AB/wDuo)*wAC;
+        % Determine the two possible weighted back vertices.
+        [WBVxO,WBVyO] = circcirc(A(1),A(2),AXbv,B(1),B(2),BXbv); 
+
+        % Determine center of circle on which the joining points lie.
+        % Use the leftmost P' as center.
+        if Pacx(2) > Pacx(1)
+            center_Pcircle = [(Px(2)+Pacx(1))/2,(Py(2)+Pacy(1))/2]; 
+        else
+            center_Pcircle = [(Px(1)+Pacx(2))/2,(Py(1)+Pacy(2))/2];
+        end
+    % If flight 1 and 2 are at the same current location.    
     else
-        center_Pcircle = [(Px(1)+Pacx(2))/2,(Py(1)+Pacy(2))/2];
+        % Determine the two possible weighted back vertices equal to the
+        % current locations.
+        WBVxO = [A(1) B(1)];
+        WBVyO = [A(2) B(2)];
     end
 
     % Use the leftmost back vertice (X1) to determine the lefthand side of
@@ -108,7 +120,7 @@ if Xordes(1) < Xordes(3) && Xordes(2) < Xordes(4)
 
     % Allow for equal destination, then the routing method with circles
     % can not be used. Set the common destination as the splitting point.
-    if CP_symmetric == 0
+    if CD < 1e-5
          % This is true if the destinations are identical.
         froute_slope_D_x = Xordes(3);
         froute_slope_D_y = Yordes(3);
@@ -152,7 +164,7 @@ if Xordes(1) < Xordes(3) && Xordes(2) < Xordes(4)
 
     % Find the formation flight route intersections with the circle on
     % which the joining points lie.
-    if Radius_Pcircle > 0
+    if AB > 1e-5
         [xoutOr,youtOr] = linecirc(froute_slope,y_intercept_froute, ...
             center_Pcircle(1),center_Pcircle(2),Radius_Pcircle);
         % The x-coordinate of the joining point will be the rightmost
@@ -167,10 +179,9 @@ if Xordes(1) < Xordes(3) && Xordes(2) < Xordes(4)
         Yjoining = Yordes(1);  
     end
 
-
     % Find the formation flight route intersections with the circle on
-    % which the splitting points lie.    
-    if CP_symmetric == 0
+    % which the splitting points lie.  
+    if CD < 1e-5
         % Again, account for the fact that the destinations may be the
         % same, in which case the radii used below will not be available.
         Xsplitting = Xordes(3);
@@ -234,7 +245,7 @@ if Xordes(1) < Xordes(3) && Xordes(2) < Xordes(4)
     % If the joining point becomes the rightmost current location, and the
     % splitting point is valid, the splitting point still has to be moved.
     % This is not required if the destinations are identical.
-    if isempty(xbv_or) == 1 && isempty(xbv_des) == 0 && CP_symmetric ~= 0
+    if isempty(xbv_or) == 1 && isempty(xbv_des) == 0 && CD > 1e-5
         % Determine the slope between the joining point, and the splitting
         % point's back vertice.
         froute_slope2 = (Yjoining - froute_slope_D_y)/ ...
@@ -253,7 +264,8 @@ if Xordes(1) < Xordes(3) && Xordes(2) < Xordes(4)
     
     % If the splitting point becomes the leftmost destination, and the
     % joining point is valid, the joining point still has to be moved.
-    if isempty(xbv_or) == 0 && isempty(xbv_des)==1
+    % AP_symmetric
+    if isempty(xbv_or) == 0 && isempty(xbv_des)== 1 && AB > 1e-5
         % Determine the slope between the joining point's back vertice, and
         % the splitting point.
         froute_slope3 = (Ysplitting - froute_slope_O_y)/ ...
@@ -286,6 +298,28 @@ if Xordes(1) < Xordes(3) && Xordes(2) < Xordes(4)
             Xjoining = max(Xordes(1),Xordes(2));
             Yjoining = Yordes(find(Xordes==Xjoining));
         end
+    end
+    
+    % If both the current location and destination of flight 1 and 2 are
+    % equal, shift forward the joining point one time step such that the
+    % aircraft can form the formation.
+    if AB < 1e-5 && CD < 1e-5
+        % Heading from current location to new joining point for the
+        % proposed formation.
+        proposedHeadingAJ = (Yordes(3)-Yordes(1))/(Xordes(3)-Xordes(1));
+        % Determine the travelled distance in km in one time step. 
+        travelledDistanceAJ = Vmax/1000*dt;
+        % Determine the horizontal travelled distance in km in one time
+        % step.
+        XtravelledDistanceAJ = cosd(atand(proposedHeadingAJ))* ...
+            travelledDistanceAJ;
+        % Determine the vertical travelled distance in km in one time step.
+        YtravelledDistanceAJ = sind(atand(proposedHeadingAJ))* ...
+            travelledDistanceAJ;
+        % New x-coordinate joining point.
+        Xjoining = Xjoining + XtravelledDistanceAJ;
+        % New y-coordinate joining point.
+        Yjoining = Yjoining + YtravelledDistanceAJ;        
     end
    
 else  % Check if routes are from left to right.

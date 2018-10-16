@@ -135,7 +135,7 @@ for simrun = 1:nSimulations
         t = t+1;                                                            
 
         % Store the data in time step t of the flight recorders.
-          flightsDataRecordings(t,:,:) = flightsData;                                    
+         flightsDataRecordings(t,:,:) = flightsData;                                    
         flightsDataReal(t,:,:) = flightsData(1:nAircraft,:); 
         
         % Visualize the flights. 

@@ -36,9 +36,11 @@
 for i = 1:length(communicationCandidates(:,1))   
     %make new biddingcandidates list in which a contractor can store
     %potential bids
-  
+
+    
     % Store flight ID of flight i in variable.
     acNr1 = communicationCandidates(i,1);
+
     % Determine the number of communication candidates for flight i.
     nCandidates = nnz(communicationCandidates(i,2:end)); 
     
@@ -63,8 +65,11 @@ for i = 1:length(communicationCandidates(:,1))
        flightsData(acNr1, 29) = 1;
        bidbook(acNr1,:) = zeros(1,12);
    end
+   
+   %DO Code that if they have had the same function for a long time, they
+   %should change.
      
-    %START code for contractors
+    %% START code for contractors
     if(flightsData(acNr1,29)==0)
         clear potentialManagers;
         potentialManagers = zeros(nCandidates,12); %acnr1, acnr2, potentialFuelSavings, divisionFutureSavings, Xjoining, ...
@@ -73,7 +78,7 @@ for i = 1:length(communicationCandidates(:,1))
         
         for j = 2:nCandidates+1
             % Store flight ID of candidate flight j in variable.
-            acNr2 = communicationCandidates(i,j);  
+            acNr2 = communicationCandidates(i,j);
 
             % Check whether the flights are still available for communication.
             if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1             
@@ -85,13 +90,15 @@ for i = 1:length(communicationCandidates(:,1))
                 % the formation route is accepted. This shows the greedy
                 % algorithm, where the first formation with positive fuel
                 % savings is accepted.
-                if potentialFuelSavings > 0 && timeWithinLimits == 1    
+                if potentialFuelSavings > 0
                     % In the greedy algorithm the fuel savings are divided
                     % equally between acNr1 and acNr2, according to the
                     % formation size of both flights. In the CNP the value of
                     % fuelSavingsOffer is decided upon by the contractor agent.
+                    
                     divisionFutureSavings = flightsData(acNr1,19)/ ...
-                    (flightsData(acNr1,19) + flightsData(acNr2,19));
+                    (flightsData(acNr1,19) + flightsData(acNr2,19)); %This is the same as in the greedy
+                
                     potentialBid = [acNr1, acNr2, potentialFuelSavings, divisionFutureSavings, Xjoining, ...
                                     Yjoining, Xsplitting, Ysplitting, VsegmentAJ_acNr1, ...
                                         VsegmentBJ_acNr2, timeAdded_acNr1, timeAdded_acNr2]; %save these in the bid so we don't need to do routing-sync again
@@ -103,8 +110,7 @@ for i = 1:length(communicationCandidates(:,1))
         end
 
         %get manager with best fuelsaving and make bid
-        %but first determine if there are any biddingcandidates at all
-        if any(any(potentialManagers)) == 1
+        if any(any(potentialManagers)) == 1 %Check if there are any potential managers
             [~, biddingID] = max(potentialManagers(:,3));
             acNr2 = potentialManagers(biddingID,2); %acNr2 = potential manager
             potentialFuelSavings = potentialManagers(biddingID,3); %potential Fuelsavings
@@ -125,6 +131,7 @@ for i = 1:length(communicationCandidates(:,1))
     end %end contractor part
         
     if(flightsData(acNr1, 29)==1)
+        
         %if manager
         % go through received bids
         % accept bids with highest fuel offering if it is viable
@@ -135,12 +142,15 @@ for i = 1:length(communicationCandidates(:,1))
             accept_deal = 0; %initially, don't accept a deal unless this is changed.
             %if have received bids, find bid with highest offered
             %fuelsaving
-            [~, idWinner] = max(bidbook(receivedBids,2)); %get the best bid
+            [~, idWinner] = max(bidbook(receivedBids,12)); %get the best bid
             %acNr1 is manager and is already defined
             %acNr2 is contractor and follows from first column of table
             
             
             acNr2 = receivedBids(idWinner);
+            if acNr1 == 8 && acNr2 == 9
+                'PAUSE';
+            end
             if not(bidbook(acNr2, 1) == acNr1) %acNr1 should be the same, otherwise error.
                 fprintf("ERROR");
                 break;
@@ -150,11 +160,11 @@ for i = 1:length(communicationCandidates(:,1))
 
             pctFuelSavingsOffer = fuelSavingsOffer / potentialFuelSavings;
             %if more managers than contractors, be greedy
-            if ratio_managers_contractors > 0.8 && pctFuelSavingsOffer > 0.3
+            if ratio_managers_contractors > 0.8 && pctFuelSavingsOffer > max(0.01, 0.3 - flightsData(acNr1,30)/10)
                 accept_deal = 1;
-            elseif ratio_managers_contractors > 0.5 && pctFuelSavingsOffer > 0.5
+            elseif ratio_managers_contractors > 0.5 && pctFuelSavingsOffer > max(0.01, 0.5 - flightsData(acNr1,30)/10)
                 accept_deal = 1;
-            elseif ratio_managers_contractors > 0.2 && pctFuelSavingsOffer > 0.6
+            elseif pctFuelSavingsOffer > max(0.01, 0.7 - flightsData(acNr1,30)/10)
                 accept_deal = 1;
             end
                 
@@ -172,9 +182,11 @@ for i = 1:length(communicationCandidates(:,1))
             timeAdded_acNr2 = bidbook(acNr2,11);
                      
             if accept_deal == 1
+                step1b_routingSynchronizationFuelSavings
                 step1c_updateProperties %do this only if a deal is made
+            elseif accept_deal == 0
+                flightsData(acNr1,30) = flightsData(acNr1,30)+1;
             end
-
         end
                    
     end

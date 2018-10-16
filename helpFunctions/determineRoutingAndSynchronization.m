@@ -1,7 +1,7 @@
 function [Xjoining,Yjoining,Xsplitting,Ysplitting,VsegmentAJ_acNr1, ...
     VsegmentBJ_acNr2,syncPossible,timeAdded_acNr1,timeAdded_acNr2] = ...
     determineRoutingAndSynchronization(wAC,wBD,wDuo,Xordes,Yordes,Vmin, ...
-    Vmax)
+    Vmax,dt)
 %% determineRoutingAndSynchronization.m description
 % Determines an initial joining and splitting point for a formation flight
 % route of flight 1 and 2 in determineGeometricRouting.m. Then
@@ -19,7 +19,8 @@ function [Xjoining,Yjoining,Xsplitting,Ysplitting,VsegmentAJ_acNr1, ...
 % Xordes (current and destination x-coordinates of both aircraft),
 % Yordes (current and destination y-coordinates of both aircraft),
 % Vmin,
-% Vmax.
+% Vmax,
+% dt.
 
 % outputs: 
 % Xjoining (x-coordinate of the joining point),
@@ -43,7 +44,7 @@ function [Xjoining,Yjoining,Xsplitting,Ysplitting,VsegmentAJ_acNr1, ...
 % Determines the joining- and splitting point for a flight formation route
 % of flight 1 and 2.
 [Xjoining,Yjoining,Xsplitting,Ysplitting] = ...
-    determineGeometricRouting(wAC,wBD,wDuo,Xordes,Yordes);      
+    determineGeometricRouting(wAC,wBD,wDuo,Xordes,Yordes,Vmax,dt);      
 
 % Determine if synchronization (joining of the two flights) is possible
 % before the intended splitting point. See Ch. 6.1.4 of Verhagen's thesis
@@ -75,7 +76,39 @@ else
         = synchronizeRouting(Xjoining,Yjoining,Xsplitting,Ysplitting, ...
         Xordes,Yordes,Vmin,Vmax);
 end
-   
+
+%% Determine if location of joining and/or splitting point leads to errors.
+% Formation of flight 1 and 2 may lead to errors in the following two
+% cases. If one is true, syncPossible is set to 0.
+% * Case 1: The current destination of either flight is reached within the
+% same time step as the proposed joining point.
+% * Case 2: The proposed splitting point is reached within the same
+% time step as the proposed joining point.
+
+% Only necessary to check if synchronization is possible.
+if syncPossible == 1
+    % Heading from current location to joining point for the proposed
+    % formation.
+    proposedHeadingAJ = (Yjoining-Yordes(1))/(Xjoining-Xordes(1));
+    proposedHeadingBJ = (Yjoining-Yordes(2))/(Xjoining-Xordes(2));
+    % Determine the travelled distance in km in one time step. 
+    travelledDistanceAJ = VsegmentAJ_acNr1/1000*dt;
+    travelledDistanceBJ = VsegmentBJ_acNr2/1000*dt;
+    % Determine the horizontal travelled distance in km in one time step. 
+    XtravelledDistanceAJ = cosd(atand(proposedHeadingAJ))* ...
+        travelledDistanceAJ;
+    XtravelledDistanceBJ = cosd(atand(proposedHeadingBJ))* ...
+        travelledDistanceBJ;
+    % Case 1.
+    if abs(Xjoining - Xordes(3)) < XtravelledDistanceAJ || ...
+            abs(Xjoining - Xordes(4)) < XtravelledDistanceBJ
+        syncPossible = 0;
+    % Case 2.
+    elseif abs(Xjoining - Xsplitting) < XtravelledDistanceAJ || ...
+            abs(Xjoining - Xsplitting) < XtravelledDistanceBJ
+        syncPossible = 0;
+    end
+end
 %% Determine additional flight time due to this potential formation flight.
 
 % Find the to be flown segment lengths.
