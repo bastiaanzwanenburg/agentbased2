@@ -32,7 +32,10 @@
 % step1c_updateProperties.m.
 
 %% Loop through the combinations of flights that are allowed to communicate.
-for i = 1:length(communicationCandidates(:,1))     
+for i = 1:length(communicationCandidates(:,1))    
+%     if t>40
+%         break
+%     end
     % Store flight ID of flight i in variable.
     acNr1 = communicationCandidates(i,1);     
     nCandidates = nnz(communicationCandidates(i,2:end));
@@ -63,21 +66,37 @@ for i = 1:length(communicationCandidates(:,1))
     
     if flightsData(acNr1,29) == 2
         accept_deal = 0;
-        minFuelSavingsOffer = 5000 - 500*flightsData(acNr1,30); %every timestep without deal, lower the bar
+        minFuelSavingsOffer = max(200,5000 - 500*flightsData(acNr1,30)); %every timestep without deal, lower the bar
         if (exist('bidbook'))
             receivedBids = find(bidbook(:,1)==acNr1);
             if ~isempty(receivedBids)
                 [~, idBestBid] = max(bidbook(receivedBids,2));
                 acNr2 = receivedBids(idBestBid);
                 if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1
+                    if acNr1 == 5 && acNr2 == 3
+                        'pause';
+                    end
                     fuelSavingsOffer = bidbook(acNr2,2);
                     if fuelSavingsOffer > minFuelSavingsOffer
+                        if acNr1 == 5 && acNr2 ==3
+                            'pause';
+                        end
                         step1b_routingSynchronizationFuelSavings %get all other relevant parameters. This is slower, but works for now.
                         divisionFutureSavings = flightsData(acNr1,19)/ ...
                                 (flightsData(acNr1,19) + flightsData(acNr2,19));
+   
                         accept_deal = 1;
-                        step1c_updateProperties;
-                        flightsData(acNr1,30)=0;                    
+                        if potentialFuelSavings > fuelSavingsOffer
+                            'making deal'
+                            acNr1
+                            acNr2
+                            step1c_updateProperties;
+                            potentialFuelSavings
+                            flightsData(acNr1,30)=0;
+                            flightsData(acNr2,30)=0;
+                            bidbook(acNr2,:) = 0;
+                        end
+ 
                     end
                 end
             end
@@ -125,7 +144,7 @@ for i = 1:length(communicationCandidates(:,1))
             idAuctioneer = potentialAuctioneers(idBestAuctioneer,1);
             potentialFuelSavings = potentialAuctioneers(idBestAuctioneer,2);
 
-            fuelSavingsOffer = min((0.1+0.05*flightsData(acNr1,30)),0.95)*potentialFuelSavings; %avoid bids higher than 95%
+            fuelSavingsOffer = min((0.1+0.05*flightsData(acNr1,30)),0.9)*potentialFuelSavings; %avoid bids higher than 95%
             
             bidbook(acNr1,1) = idAuctioneer;
             bidbook(acNr1,2) = fuelSavingsOffer;
