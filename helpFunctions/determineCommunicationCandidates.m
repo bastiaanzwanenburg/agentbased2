@@ -67,6 +67,12 @@ if length(flightsData(:,1)) >= 2
             % communicate.
             if abs(intersectX) >= 0
                 combinationAble(i) = 1;
+            % If acNr1 and acNr2 have the same current location, the
+            % combination is able to communicate.
+            elseif abs(flightsData(acNr1(i),14)-flightsData(acNr2(i),14))...
+                    < 1e-5 && abs(flightsData(acNr1(i),15)- ...
+                    flightsData(acNr2(i),15)) < 1e-5 
+                combinationAble(i) = 1;
             else
                 combinationAble(i) = 0;
             end

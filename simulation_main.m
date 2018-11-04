@@ -6,7 +6,7 @@
 % step3_determineFormationLeaders.m, final1_visualizeAirports.m,
 % final2_visualizeFlights.m, and final3_concludeSimulation.m. Each of these
 % files may contain (multiple) help functions.
- % vs
+
 % The main file you will work in is step1a_doNegotiation_*.m. You are
 % allowed to make changes to all other functions, as long as you clearly
 % comment the code and document the changes. Examples of why such changes
@@ -55,7 +55,7 @@
 % * Flights must be eastbound for the code to work.
 
 %% Clear workspace and command window, add paths for help functions and files.
-tic
+ 
 % Close figures.
 close all
 % Clear workspace.
@@ -87,19 +87,28 @@ step1a_doNegotiation = str2func(char(negotiationFiles(negotiationTechnique)));
 % over the simulation runs.
 prep3_performanceIndicators;
 
+%% Create all flight schedules.
+
+% Predefine a 3D matrix to store the flight schedules of the nSimulations. 
+flightsInitialSchedule = zeros(nSimulations,3*nAircraft,28);
+
+for simrunSchedule = 1:nSimulations
+    % Generate the initial properties for each real flight and create all
+    % random flight schedules.
+    prep4_loadFlightSchedule;
+    % Load the flight schedules into the 3D matrix.
+    flightsInitialSchedule(simrunSchedule,:,:) = flightsInitialData;
+end
+
 %% Carry out the simulation runs.
 for simrun = 1:nSimulations
     %% Prepare the (new) simulation run.
-
-    % Generate the initial properties for each real flight and create the
-    % random flight schedule.
-    prep4_loadFlightSchedule;
         
     % Remove previously obtained data from the variables.
     clearvars flightsDataRecordings flightsDataReal flightsData
 
-    % Load the initial flight data. 
-    flightsData = flightsInitialData;
+    % Load the initial flight data.
+    flightsData = squeeze(flightsInitialSchedule(simrun,:,:));
 
     % Get the initial values into the flight data recorder. This will be
     % used to visualize the results.
@@ -132,10 +141,10 @@ for simrun = 1:nSimulations
         step3_determineFormationLeaders;
 
         % Iterate to the next time step.
-        t = t+1;                                                            
+        t = t+1;                                                                
 
         % Store the data in time step t of the flight recorders.
-          flightsDataRecordings(t,:,:) = flightsData;                                    
+        flightsDataRecordings(t,:,:) = flightsData;                                    
         flightsDataReal(t,:,:) = flightsData(1:nAircraft,:); 
         
         % Visualize the flights. 
@@ -150,4 +159,3 @@ for simrun = 1:nSimulations
     % flying.
     final3_concludeSimulation;
 end
-toc

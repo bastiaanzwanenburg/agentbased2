@@ -300,26 +300,27 @@ if Xordes(1) < Xordes(3) && Xordes(2) < Xordes(4)
         end
     end
     
-    % If both the current location and destination of flight 1 and 2 are
-    % equal, shift forward the joining point one time step such that the
-    % aircraft can form the formation.
-    if AB < 1e-5 && CD < 1e-5
-        % Heading from current location to new joining point for the
-        % proposed formation.
-        proposedHeadingAJ = (Yordes(3)-Yordes(1))/(Xordes(3)-Xordes(1));
+    % If the current location of flight 1 and 2 are equal, shift forward
+    % the joining point along the line segment from joining point to
+    % splitting point one time step such that the aircraft can form the
+    % formation.
+    if AB < 1e-5
+        % Heading from joining point to splitting point for the proposed
+        % formation.
+        proposedHeadingJS = (Ysplitting-Yjoining)/(Xsplitting-Xjoining); 
         % Determine the travelled distance in km in one time step. 
-        travelledDistanceAJ = Vmax/1000*dt;
+        travelledDistanceJS = Vmax/1000*dt;
         % Determine the horizontal travelled distance in km in one time
         % step.
-        XtravelledDistanceAJ = cosd(atand(proposedHeadingAJ))* ...
-            travelledDistanceAJ;
+        XtravelledDistanceJS = cosd(atand(proposedHeadingJS))* ...
+            travelledDistanceJS;
         % Determine the vertical travelled distance in km in one time step.
-        YtravelledDistanceAJ = sind(atand(proposedHeadingAJ))* ...
-            travelledDistanceAJ;
+        YtravelledDistanceJS = sind(atand(proposedHeadingJS))* ...
+            travelledDistanceJS;
         % New x-coordinate joining point.
-        Xjoining = Xjoining + XtravelledDistanceAJ;
+        Xjoining = Xjoining + XtravelledDistanceJS;
         % New y-coordinate joining point.
-        Yjoining = Yjoining + YtravelledDistanceAJ;        
+        Yjoining = Yjoining + YtravelledDistanceJS; 
     end
    
 else  % Check if routes are from left to right.
