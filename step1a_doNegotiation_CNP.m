@@ -146,11 +146,8 @@ for i = 1:length(communicationCandidates(:,1))
             %acNr1 is manager and is already defined
             %acNr2 is contractor and follows from first column of table
             
-            
             acNr2 = receivedBids(idWinner);
-            if acNr1 == 8 && acNr2 == 9
-                'PAUSE';
-            end
+            
             if not(bidbook(acNr2, 1) == acNr1) %acNr1 should be the same, otherwise error.
                 fprintf("ERROR");
                 break;
@@ -167,11 +164,6 @@ for i = 1:length(communicationCandidates(:,1))
             elseif pctFuelSavingsOffer > max(0.01, 0.7 - flightsData(acNr1,30)/10)
                 accept_deal = 1;
             end
-            if acNr1 == 1 && acNr2 == 20
-                'pause'
-            end
-                
-            
             
             %we stored all sync info in the bidbook, get that.
             divisionFutureSavings = bidbook(acNr2,3); 
@@ -187,7 +179,9 @@ for i = 1:length(communicationCandidates(:,1))
             if accept_deal == 1
                 step1b_routingSynchronizationFuelSavings
                 step1c_updateProperties %do this only if a deal is made
-                bidbook(acNr2,:) ==0;
+                bidbook(acNr2,:) = 0;
+                flightsData(acNr1,30) = 0;
+                flightsData(acNr2,30) = 0;
             elseif accept_deal == 0
                 flightsData(acNr1,30) = flightsData(acNr1,30)+1;
             end
