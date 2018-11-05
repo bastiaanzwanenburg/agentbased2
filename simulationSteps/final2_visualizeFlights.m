@@ -121,7 +121,7 @@ set(fig, 'WindowKeyPressFcn', @keyPressCallback);
 Movie(t) = getframe;
 
 % Slow the visualization in the initial stage when few flights are active.
-if t < 20
+if t < 20 && visualizationOption == 1
     pause(0.2);
 end
 
