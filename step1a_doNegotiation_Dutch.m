@@ -120,7 +120,7 @@ for i = 1:length(communicationCandidates(:,1))
                 % This file contains code to perform the routing and
                 % synchronization, and to determine the potential fuel savings.
                 step1b_routingSynchronizationFuelSavings
-
+                
                 % If the involved flights can reduce their cumulative fuel burn
                 % the formation route is accepted. This shows the greedy
                 % algorithm, where the first formation with positive fuel

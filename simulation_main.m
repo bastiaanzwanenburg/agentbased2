@@ -55,7 +55,7 @@
 % * Flights must be eastbound for the code to work.
 
 %% Clear workspace and command window, add paths for help functions and files.
- 
+tic
 % Close figures.
 close all
 % Clear workspace.
@@ -90,9 +90,10 @@ prep3_performanceIndicators;
 %% Create all flight schedules.
 
 % Predefine a 3D matrix to store the flight schedules of the nSimulations. 
-flightsInitialSchedule = zeros(nSimulations,3*nAircraft,28);
+flightsInitialSchedule = zeros(nSimulations,3*nAircraft,30);
 
 for simrunSchedule = 1:nSimulations
+    % simrunSchedule
     % Generate the initial properties for each real flight and create all
     % random flight schedules.
     prep4_loadFlightSchedule;
@@ -159,3 +160,4 @@ for simrun = 1:nSimulations
     % flying.
     final3_concludeSimulation;
 end
+toc

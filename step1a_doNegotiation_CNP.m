@@ -167,6 +167,9 @@ for i = 1:length(communicationCandidates(:,1))
             elseif pctFuelSavingsOffer > max(0.01, 0.7 - flightsData(acNr1,30)/10)
                 accept_deal = 1;
             end
+            if acNr1 == 1 && acNr2 == 20
+                'pause'
+            end
                 
             
             
@@ -184,6 +187,7 @@ for i = 1:length(communicationCandidates(:,1))
             if accept_deal == 1
                 step1b_routingSynchronizationFuelSavings
                 step1c_updateProperties %do this only if a deal is made
+                bidbook(acNr2,:) ==0;
             elseif accept_deal == 0
                 flightsData(acNr1,30) = flightsData(acNr1,30)+1;
             end
