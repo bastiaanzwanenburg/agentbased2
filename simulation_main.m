@@ -90,7 +90,7 @@ prep3_performanceIndicators;
 %% Create all flight schedules.
 
 % Predefine a 3D matrix to store the flight schedules of the nSimulations. 
-flightsInitialSchedule = zeros(nSimulations,3*nAircraft,30);
+flightsInitialSchedule = zeros(nSimulations,3*nAircraft,31);
 
 for simrunSchedule = 1:nSimulations
     % simrunSchedule

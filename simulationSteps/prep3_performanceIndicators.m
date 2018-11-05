@@ -29,3 +29,10 @@ extraDistancePctPerRun = zeros(nSimulations,1); % [%]
 % Percentual change in total flight, comparing the actual flight time to
 % the total flight time of only solo flights were flown.
 extraFlightTimePctPerRun = zeros(nSimulations,1); % [%] 
+
+% Number of aircraft that have been in a formation at all
+flightsInFormation = zeros(nSimulations,1);
+
+heatMapLocations = [];
+dealLog = [];
+

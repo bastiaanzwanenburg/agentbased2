@@ -39,6 +39,18 @@ extraDistancePctPerRun(simrun) = extraDistancePct; % [%]
 % the total flight time of only solo flights were flown.
 extraFlightTimePctPerRun(simrun) = extraFlightTimePct; % [%]
 
+% Percentage of normal aircraft that have been in a 
+flightsInFormation = length(find(flightsData([1:nAircraft],31)==1))/nAircraft;
+
+% For the CNP: Fuel saving per manager and contractor
+totalFuelSavedManagers = sum(dealLog(:,4));
+totalFuelSaved = sum(dealLog(:,5));
+totalFuelSavedContractors = totalFuelSaved - totalFuelSavedManagers;
+
+pctFuelSavedManagers = totalFuelSavedManagers / totalFuelSaved;
+pctFuelSavedContractors = totalFuelSavedContractors / totalFuelSaved;
+
+
 %% Clear some variables.
 
 clearvars a acNr1 acNr2 c communicationCandidates divisionFutureSavings ...

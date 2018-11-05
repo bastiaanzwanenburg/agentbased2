@@ -94,6 +94,7 @@ function flightsInitialData = generateFlights(nAircraft,Vmax,MFuelSolo, ...
 % 29: Column that indicates if this flight (agent) is a Manager or
 % Auctioneer, if 1 = manager / auctioneer if 0 = contractor (so agents are
 % contractors by default)
+% 31: Has the agent been in a formation at all?
 
 
 % special cases: 
@@ -122,7 +123,7 @@ destinationAirports = [destinationAirportsX destinationAirportsY];
 
 % Predefine for performance. 2*nAircraft additional rows are created as
 % dummy flights. These dummy flights act as formation navigators.
-flightsInitialData = zeros(3*nAircraft,30); 
+flightsInitialData = zeros(3*nAircraft,31); 
 bids = zeros(1,7);
 bidbook = zeros(nAircraft, 12);
 

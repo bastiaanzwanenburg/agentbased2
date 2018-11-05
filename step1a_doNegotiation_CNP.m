@@ -59,7 +59,7 @@ for i = 1:length(communicationCandidates(:,1))
    end
    ratio_managers_contractors = n_managers / (n_contractors + n_managers);
        
-   if ratio_managers_contractors < 0.3
+   if ratio_managers_contractors < 0.5
        %if there are only a few managers in the area, become manager
        %and ditch all bids made by me
        flightsData(acNr1, 29) = 1;
@@ -182,6 +182,9 @@ for i = 1:length(communicationCandidates(:,1))
                 bidbook(acNr2,:) = 0;
                 flightsData(acNr1,30) = 0;
                 flightsData(acNr2,30) = 0;
+                %Log that this aircraft has been in a formation
+                flightsData([acNr1,acNr2],31) = 1; %log that this aircraft has been in a deal at all
+                dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings]];
             elseif accept_deal == 0
                 flightsData(acNr1,30) = flightsData(acNr1,30)+1;
             end
