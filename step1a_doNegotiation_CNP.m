@@ -66,12 +66,28 @@ for i = 1:length(communicationCandidates(:,1))
        bidbook(acNr1,:) = zeros(1,12);
    end
    
-   %DO Code that if they have had the same function for a long time, they
+   %If no deal for a long time; make a deal
+   time_without_deal = flightsData(acNr1,30);
+   time_constant = 5;
+   if exp(-time_without_deal/time_constant) < rand
+       %Then change
+       if flightsData(acNr1,29) == 0
+           bidbook(acNr1,:) = zeros(1,12);
+           flightsData(acNr1,30) = 1;
+       else
+           flightsData(acNr1,30) = 0;
+       end
+   end
+   
+   
    %should change.
      
     %% START code for contractors
     if(flightsData(acNr1,29)==0)
         clear potentialManagers;
+        flightsData(acNr1,30) = flightsData(acNr1,30)+1;
+        
+        
         potentialManagers = zeros(nCandidates,12); %acnr1, acnr2, potentialFuelSavings, divisionFutureSavings, Xjoining, ...
                                                     %Yjoining, Xsplitting, Ysplitting, VsegmentAJ_acNr1, ...
                                                     %VsegmentBJ_acNr2, timeAdded_acNr1, timeAdded_acNr2
@@ -90,7 +106,8 @@ for i = 1:length(communicationCandidates(:,1))
                 % the formation route is accepted. This shows the greedy
                 % algorithm, where the first formation with positive fuel
                 % savings is accepted.
-                if potentialFuelSavings > 0
+                
+                if potentialFuelSavings > 0 && flightsData(acNr2,29)==1
                     % In the greedy algorithm the fuel savings are divided
                     % equally between acNr1 and acNr2, according to the
                     % formation size of both flights. In the CNP the value of
@@ -108,22 +125,20 @@ for i = 1:length(communicationCandidates(:,1))
                 end          
             end
         end
-
+        
         %get manager with best fuelsaving and make bid
         if any(any(potentialManagers)) == 1 %Check if there are any potential managers
             [~, biddingID] = max(potentialManagers(:,3));
             acNr2 = potentialManagers(biddingID,2); %acNr2 = potential manager
             potentialFuelSavings = potentialManagers(biddingID,3); %potential Fuelsavings
             %depending on ratio, make a bid
-            if ratio_managers_contractors < 0.33333
-                fuelSavingsOffer = potentialFuelSavings * 0.8;
-            elseif ratio_managers_contractors < 0.7
-                fuelSavingsOffer = potentialFuelSavings * 0.5;
-            else
-                fuelSavingsOffer = potentialFuelSavings * 0.25;
+            
+            if flightsData(acNr1,25) == 2 && flightsData(acNr2,25) == 2 %IF Both are alliance
+                fuelSavingsOffer = potentialFuelSavings;
             end
-   
-
+            
+            fuelSavingsOffer = (1-ratio_managers_contractors)*potentialFuelSavings; %so if there are more managers, bid lesss
+            
             %make bid with all necessary info
             bid = [potentialManagers(biddingID,2:12), fuelSavingsOffer]; %bid = sync-info from the potentialBid + fuelsavingsoffer
             bidbook(acNr1,:) = bid; %add bid to bidbook
@@ -131,13 +146,15 @@ for i = 1:length(communicationCandidates(:,1))
     end %end contractor part
         
     if(flightsData(acNr1, 29)==1)
-        
+        flightsData(acNr1,30) = flightsData(acNr1,30)+1; %one more timestep w/o deal
+
         %if manager
         % go through received bids
         % accept bids with highest fuel offering if it is viable
 
         %find bids that are sent to this contractor
         receivedBids = find(bidbook(:,1)==acNr1);
+        
         if receivedBids > 0 
             accept_deal = 0; %initially, don't accept a deal unless this is changed.
             %if have received bids, find bid with highest offered
@@ -147,23 +164,23 @@ for i = 1:length(communicationCandidates(:,1))
             %acNr2 is contractor and follows from first column of table
             
             acNr2 = receivedBids(idWinner);
-            
-            if not(bidbook(acNr2, 1) == acNr1) %acNr1 should be the same, otherwise error.
-                fprintf("ERROR");
-                break;
-            end
+                       
             fuelSavingsOffer = bidbook(acNr2,12);
             potentialFuelSavings = bidbook(acNr2,2);
 
             pctFuelSavingsOffer = fuelSavingsOffer / potentialFuelSavings;
             %if more managers than contractors, be greedy
-            if ratio_managers_contractors > 0.8 && pctFuelSavingsOffer > max(0.01, 0.3 - flightsData(acNr1,30)/10)
-                accept_deal = 1;
-            elseif ratio_managers_contractors > 0.5 && pctFuelSavingsOffer > max(0.01, 0.5 - flightsData(acNr1,30)/10)
-                accept_deal = 1;
-            elseif pctFuelSavingsOffer > max(0.01, 0.7 - flightsData(acNr1,30)/10)
+            
+            if pctFuelSavingsOffer > (1-ratio_managers_contractors-flightsData(acNr1,30)/10)
                 accept_deal = 1;
             end
+%             if ratio_managers_contractors > 0.8 && pctFuelSavingsOffer > max(0.01, 0.3 - flightsData(acNr1,30)/10)
+%                 accept_deal = 1;
+%             elseif ratio_managers_contractors > 0.5 && pctFuelSavingsOffer > max(0.01, 0.5 - flightsData(acNr1,30)/10)
+%                 accept_deal = 1;
+%             elseif pctFuelSavingsOffer > max(0.01, 0.7 - flightsData(acNr1,30)/10)
+%                 accept_deal = 1;
+%             end
             
             %we stored all sync info in the bidbook, get that.
             divisionFutureSavings = bidbook(acNr2,3); 
@@ -186,7 +203,6 @@ for i = 1:length(communicationCandidates(:,1))
                 flightsData([acNr1,acNr2],31) = 1; %log that this aircraft has been in a deal at all
                 dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings]];
             elseif accept_deal == 0
-                flightsData(acNr1,30) = flightsData(acNr1,30)+1;
             end
         end
                    

@@ -20,7 +20,7 @@
 % * Any effect of wind is not included in the model.
 % * At the end of a solo mission, an aircraft would be out of fuel. This is
 % used to determine the starting weight of an aircraft.
-% * Flying in formation will change the trailing aircraft's M-value from
+% * Flying in for1.mation will change the trailing aircraft's M-value from
 % 140 to 158 (the fuel consumption of an aircraft is governed by these
 % M-values.  This corresponds to a fuel flow reduction of 10%. For more
 % information, see Ch. 5.3.2 of Verhagen's thesis).

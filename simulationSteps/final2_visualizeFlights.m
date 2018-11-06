@@ -36,9 +36,7 @@ for b = 1:length(flightsDataRecordings(t,:,1))
 
     % Only plot flying aircraft. These are the flights with property 16
     % (flying status) set to 1 ("flying").
-    if flightsDataRecordings(t,b,16) == 1   
-
-        
+    if flightsDataRecordings(t,b,16) == 1                                     
         % Select only flights that are not in formation. These are the
         % flights with property 17 (formation status) set to 0 ("not in
         % formation").
@@ -49,7 +47,6 @@ for b = 1:length(flightsDataRecordings(t,:,1))
             if flightsDataRecordings(t,b,2) == 0                                
                 % Differentiate the color of engaged and solo flights,
                 % use cyan for engaged flights.
-                heatMapLocations = [heatMapLocations; [flightsDataRecordings(t,b,14), flightsDataRecordings(t,b,15)]];
                 plot(flightsDataRecordings(t,b,14), ...
                     flightsDataRecordings(t,b,15),'c.','MarkerSize',20)
             % Select flights that are not engaged. These are the
@@ -60,8 +57,6 @@ for b = 1:length(flightsDataRecordings(t,:,1))
                 % use green for solo flights.
                 plot(flightsDataRecordings(t,b,14), ...
                     flightsDataRecordings(t,b,15),'g.','MarkerSize',20)
-                heatMapLocations = [heatMapLocations; [flightsDataRecordings(t,b,14), flightsDataRecordings(t,b,15)]];
-
             end
         end
 
@@ -76,16 +71,12 @@ for b = 1:length(flightsDataRecordings(t,:,1))
             if flightsDataRecordings(t,b,2) == 0
                 % Use cyan with a magenta edge for formations that are
                 % engaged.
-                heatMapLocations = [heatMapLocations; [flightsDataRecordings(t,b,14), flightsDataRecordings(t,b,15)]];
-
                 plot(flightsDataRecordings(t,b,14), ...
                 flightsDataRecordings(t,b,15),'o','MarkerSize', ...
                 7+1*(flightsDataRecordings(t,b,19)-1),'MarkerEdgeColor',...
                 'm','MarkerFaceColor','c')          
             else    
                 % Use magenta for formations that are not engaged. 
-                heatMapLocations = [heatMapLocations; [flightsDataRecordings(t,b,14), flightsDataRecordings(t,b,15)]];
-
                 plot(flightsDataRecordings(t,b,14), ...
                 flightsDataRecordings(t,b,15),'o','MarkerSize', ...
                 7+1*(flightsDataRecordings(t,b,19)-1),'MarkerEdgeColor',...
@@ -161,6 +152,6 @@ function keyPressCallback(source,eventdata)
   if strcmpi(keyPressed,'space')
       % If the key that is pressed is the space bar, pause the simulation
       % at line 151 of simulation_main.m.
-      dbstop in simulation_main at 136
+      dbstop in simulation_main at 151
   end
 end

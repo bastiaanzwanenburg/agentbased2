@@ -43,13 +43,15 @@ extraFlightTimePctPerRun(simrun) = extraFlightTimePct; % [%]
 flightsInFormation = length(find(flightsData([1:nAircraft],31)==1))/nAircraft;
 
 % For the CNP: Fuel saving per manager and contractor
-totalFuelSavedManagers = sum(dealLog(:,4));
-totalFuelSaved = sum(dealLog(:,5));
-totalFuelSavedContractors = totalFuelSaved - totalFuelSavedManagers;
+if negotiationTechnique == 2
+    totalFuelSavedManagers = sum(dealLog(:,4));
+    totalFuelSaved = sum(dealLog(:,5));
+    totalFuelSavedContractors = totalFuelSaved - totalFuelSavedManagers;
 
-pctFuelSavedManagers = totalFuelSavedManagers / totalFuelSaved;
-pctFuelSavedContractors = totalFuelSavedContractors / totalFuelSaved;
 
+    pctFuelSavedManagers = totalFuelSavedManagers / totalFuelSaved;
+    pctFuelSavedContractors = totalFuelSavedContractors / totalFuelSaved;
+end
 
 %% Clear some variables.
 

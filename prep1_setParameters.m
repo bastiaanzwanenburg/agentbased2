@@ -16,7 +16,7 @@ communicationRange = 500;
 percentageAlliance = 40;                                                    
 
 % Number of aircraft (only for when creating random flight schedules).
-nAircraft = 20;    
+nAircraft = 100;    
 
 % Size of time step used in the simulation [s].
 dt = 300;                                                   
