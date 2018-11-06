@@ -33,6 +33,9 @@
 
 %% Loop through the combinations of flights that are allowed to communicate.
 %blalballa
+if t==15
+    tic
+end
 for i = 1:length(communicationCandidates(:,1))   
     %make new biddingcandidates list in which a contractor can store
     %potential bids
@@ -133,12 +136,11 @@ for i = 1:length(communicationCandidates(:,1))
             potentialFuelSavings = potentialManagers(biddingID,3); %potential Fuelsavings
             %depending on ratio, make a bid
             
+            
+            fuelSavingsOffer = min(1,(1-ratio_managers_contractors+flightsData(acNr1,30)/10))*potentialFuelSavings; %so if there are more managers, bid lesss
             if flightsData(acNr1,25) == 2 && flightsData(acNr2,25) == 2 %IF Both are alliance
                 fuelSavingsOffer = potentialFuelSavings;
             end
-            
-            fuelSavingsOffer = (1-ratio_managers_contractors)*potentialFuelSavings; %so if there are more managers, bid lesss
-            
             %make bid with all necessary info
             bid = [potentialManagers(biddingID,2:12), fuelSavingsOffer]; %bid = sync-info from the potentialBid + fuelsavingsoffer
             bidbook(acNr1,:) = bid; %add bid to bidbook
@@ -184,15 +186,15 @@ for i = 1:length(communicationCandidates(:,1))
             
             %we stored all sync info in the bidbook, get that.
             divisionFutureSavings = bidbook(acNr2,3); 
-            Xjoining = bidbook(acNr2,4);
-            Yjoining = bidbook(acNr2,5);
-            Xsplitting = bidbook(acNr2,6);
-            Ysplitting = bidbook(acNr2,7);
-            VsegmentAJ_acNr1 = bidbook(acNr2,8);
-            VsegmentBJ_acNr2 = bidbook(acNr2,9);
-            timeAdded_acNr1 = bidbook(acNr2,10);
-            timeAdded_acNr2 = bidbook(acNr2,11);
-                     
+%             Xjoining = bidbook(acNr2,4);
+%             Yjoining = bidbook(acNr2,5);
+%             Xsplitting = bidbook(acNr2,6);
+%             Ysplitting = bidbook(acNr2,7);
+%             VsegmentAJ_acNr1 = bidbook(acNr2,9);
+%             VsegmentBJ_acNr2 = bidbook(acNr2,8);
+%             timeAdded_acNr1 = bidbook(acNr2,11); 
+%             timeAdded_acNr2 = bidbook(acNr2,10); %(8 and 9) and (10 and 11) are swapped to swap acNr2 and acNr1
+%                      
             if accept_deal == 1
                 step1b_routingSynchronizationFuelSavings
                 step1c_updateProperties %do this only if a deal is made
@@ -210,4 +212,7 @@ for i = 1:length(communicationCandidates(:,1))
             
     
 
+end
+if t==15
+    toc
 end

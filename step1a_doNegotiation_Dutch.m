@@ -1,5 +1,5 @@
 %% step1a_doNegotiation_Dutch.m description
-% Add your Dutch agent models and edit this file to create your Dutch
+% Add your Dutch agent models and edit this file to create your English
 % auction.
 
 % This file uses the matrix generated in determineCommunicationCandidates.m
@@ -32,124 +32,88 @@
 % step1c_updateProperties.m.
 
 %% Loop through the combinations of flights that are allowed to communicate.
-for i = 1:length(communicationCandidates(:,1))    
-%     if t>40
-%         break
-%     end
+
+for i = 1:length(communicationCandidates(:,1))
     % Store flight ID of flight i in variable.
-    acNr1 = communicationCandidates(i,1);     
+    acNr1 = communicationCandidates(i,1);
+    flightsData(acNr1,30)=flightsData(acNr1,30)+1;
+    % Determine the number of communication candidates for flight i.
     nCandidates = nnz(communicationCandidates(i,2:end));
-    %flightsData(i,29)==1 --> bidder, == 2 --> auctioneer
     
-    %% Determine the number of communication candidates for flight i.
-    if flightsData(acNr1,29) == 0
+    n_auctioneers = 0;
+    n_bidders = 0;
+    
+    for j = 2:nCandidates+1
+        %determine auctioneer/bidder ratio
+        acNr2 = communicationCandidates(i,j);
         
-        nearbyAgents = communicationCandidates(i,2:end);
-        nearbyAgents = nearbyAgents(find(nearbyAgents ~=0));
-        n_nearbyAuctioneers = length(find(flightsData(nearbyAgents,29)==2));
-        n_nearbyBidders = length(find(flightsData(nearbyAgents,29)==1));
-        bidders_vs_auctioneers = n_nearbyBidders / (n_nearbyBidders + n_nearbyAuctioneers);
-        
-        if bidders_vs_auctioneers > 0.5
-            %there are more bidders, so become auctioneer
-            flightsData(acNr1,29) = 2;
+        if(flightsData(acNr2,29)) == 1
+            n_auctioneers = n_auctioneers + 1;
         else
-            flightsData(acNr1,29) = 1;
+            n_bidders = n_bidders + 1;
         end
     end
+    ratio_auctioneers_bidders = n_auctioneers / (n_auctioneers + n_bidders);
+
+    
+    if ratio_auctioneers_bidders < 0.5
+        flightsData(acNr1, 29) = 1; %so this can change every iteration
+    end
+    
+    if flightsData(acNr1,29)==1 %if is auctioneer
+        receivedBids = []; %bids: [acNr2, bid]
         
-              
-    %%IF AUCTIONEER%%
-    %bidbook = received bids. bidbookID = sending agent. bidbook =
-    %(auctioneer, fuelsavingsoffering)
-    
-    
-    if flightsData(acNr1,29) == 2
-        accept_deal = 0;
-        minFuelSavingsOffer = max(200,5000 - 500*flightsData(acNr1,30)); %every timestep without deal, lower the bar
-        if (exist('bidbook'))
-            receivedBids = find(bidbook(:,1)==acNr1);
-            if ~isempty(receivedBids)
-                [~, idBestBid] = max(bidbook(receivedBids,2));
-                acNr2 = receivedBids(idBestBid);
-                if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1
-                    if acNr1 == 5 && acNr2 == 3
-                        'pause';
-                    end
-                    fuelSavingsOffer = bidbook(acNr2,2);
-                    if fuelSavingsOffer > minFuelSavingsOffer
-                        if acNr1 == 5 && acNr2 ==3
-                            'pause';
-                        end
-                        step1b_routingSynchronizationFuelSavings %get all other relevant parameters. This is slower, but works for now.
-                        divisionFutureSavings = flightsData(acNr1,19)/ ...
-                                (flightsData(acNr1,19) + flightsData(acNr2,19));
-   
-                        accept_deal = 1;
-                        if potentialFuelSavings > fuelSavingsOffer
-                            'making deal'
-                            acNr1
-                            acNr2
-                            step1c_updateProperties;
-                            potentialFuelSavings
-                            flightsData(acNr1,30)=0;
-                            flightsData(acNr2,30)=0;
-                            bidbook(acNr2,:) = 0;
-                        end
- 
-                    end
-                end
-            end
-        end
-        if accept_deal == 0
-            flightsData(acNr1,30) = flightsData(acNr1,30)+1;
-        end
-    end
-    
-    if flightsData(acNr1,29) == 1 %if is bidder
-        potentialAuctioneers = [];
         % Loop over all candidates of flight i.
         for j = 2:nCandidates+1
             % Store flight ID of candidate flight j in variable.
-            acNr2 = communicationCandidates(i,j);  
-
+            acNr2 = communicationCandidates(i,j);
+            
             % Check whether the flights are still available for
-            % communication and whether the other flight is auctioneer
-            if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1 && flightsData(acNr2,29) == 2
-
+            % communication and whether the other agent is bidder
+            if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1 && flightsData(acNr2,29)==0
                 % This file contains code to perform the routing and
-                % synchronization, and to determine the potential fuel savings.
-                step1b_routingSynchronizationFuelSavings
+                % synchronization, and to determine the potential fuel
+                % savings.
+                valueForBidder = 1;
+                step1aa_calcTrueValue %acNr1 is auctioneer, acNr2 is bidder
+                if trueValue > 0
+                    bid = trueValue*exp(-(nCandidates)/10);
+                    receivedBids = [receivedBids; [acNr2, bid]];
+                end
                 
-                % If the involved flights can reduce their cumulative fuel burn
-                % the formation route is accepted. This shows the greedy
-                % algorithm, where the first formation with positive fuel
-                % savings is accepted.
-                if potentialFuelSavings > 0     
-                    % In the greedy algorithm the fuel savings are divided
-                    % equally between acNr1 and acNr2, according to the
-                    % formation size of both flights. In the auction the value
-                    % of fuelSavingsOffer is decided upon by the bidding agent.
-
-                    potentialAuctioneers = [potentialAuctioneers; [acNr2, potentialFuelSavings]];
-
-                end          
+                % Update the relevant flight properties for the formation
+                % that is accepted.
+                %step1c_updateProperties
             end
         end
-    
-        %after looping through candidates, find the highest
-        if ~isempty(potentialAuctioneers)   
-
-            [~,idBestAuctioneer] = max(potentialAuctioneers(:,2));
-            idAuctioneer = potentialAuctioneers(idBestAuctioneer,1);
-            potentialFuelSavings = potentialAuctioneers(idBestAuctioneer,2);
-
-            fuelSavingsOffer = min((0.1+0.05*flightsData(acNr1,30)),0.9)*potentialFuelSavings; %avoid bids higher than 95%
-            
-            bidbook(acNr1,1) = idAuctioneer;
-            bidbook(acNr1,2) = fuelSavingsOffer;
-            flightsData(acNr1,30) = flightsData(acNr1,30) + 1;
+        %now do the auction itself. 
+       
+        if ~isempty(receivedBids)
+            valueForBidder = 0; %this is an input for calcTrueValue --> so it will see acnr1 as auctioneer
+            step1aa_calcTrueValue
+            minimum_bid = trueValue;
+            auction_value = trueValue * 3;
+            while minimum_bid < auction_value
+                possible_bidders = find(receivedBids(:,2)>auction_value);
+                if ~isempty(possible_bidders) %if not empty
+                    winner = receivedBids(possible_bidders,1);
+                    acNr2 = winner(1); %if there is more than 1 bidder meeting the value; arbitrarliy accept the value
+                    fuelSavingsOffer = auction_value;
+                    auction_value = 0; %to stop the while
+                    
+                    step1b_routingSynchronizationFuelSavings
+                    divisionFutureSavings = flightsData(acNr1,19)/ ...
+                        (flightsData(acNr1,19) + flightsData(acNr2,19));
+                    step1c_updateProperties
+                    flightsData(acNr1,30)=0;
+                    flightsData(acNr2,30)=0;
+                    
+                end
+                auction_value = auction_value - 0.1*trueValue;
+            end
         end
-    end          
-    
+        
+       
+      
+    end
 end

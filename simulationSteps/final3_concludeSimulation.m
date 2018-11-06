@@ -40,7 +40,7 @@ extraDistancePctPerRun(simrun) = extraDistancePct; % [%]
 extraFlightTimePctPerRun(simrun) = extraFlightTimePct; % [%]
 
 % Percentage of normal aircraft that have been in a 
-flightsInFormation = length(find(flightsData([1:nAircraft],31)==1))/nAircraft;
+flightsInFormation = length(find(flightsData([1:nAircraft],27)>0))/nAircraft;
 
 % For the CNP: Fuel saving per manager and contractor
 if negotiationTechnique == 2
