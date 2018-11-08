@@ -186,6 +186,7 @@ for i = 1:length(communicationCandidates(:,1))
             
             %we stored all sync info in the bidbook, get that.
             divisionFutureSavings = bidbook(acNr2,3); 
+            
 %             Xjoining = bidbook(acNr2,4);
 %             Yjoining = bidbook(acNr2,5);
 %             Xsplitting = bidbook(acNr2,6);

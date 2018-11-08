@@ -1,7 +1,6 @@
 step1b_routingSynchronizationFuelSavings
 
 
-
 maxDelay_acNr1 = flightsData(acNr1,26);
 maxDelay_acNr2 = flightsData(acNr2,26); %this is unknown for acNr1
 
@@ -29,7 +28,7 @@ elseif valueForBidder==0 && bothAlliance
 elseif valueForBidder==1
     trueValue = potentialFuelSavings*factor_no_deal*factor_delay;
 else
-    trueValue = potentialFuelSavings*(1-factor_no_deal);
+    trueValue = potentialFuelSavings*(1-factor_no_deal); %auctinoeer neemt geen delay mee; arbitrarily
 end
 
 
