@@ -23,7 +23,7 @@ dt = 300;
 
 % Negotiation technique (1: greedy algorithm, 2: CNP, 3: Dutch, 4: English,
 % 5: Vickrey, 6: Japanese, 7: first-price sealed-bid).
-negotiationTechnique = 5; 
+negotiationTechnique = 2; 
 
 % Visualize the results (0: no visualization, 1: visualization).
 visualizationOption = 1;
