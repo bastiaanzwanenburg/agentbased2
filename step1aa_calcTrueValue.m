@@ -11,8 +11,8 @@ time_without_deal_acNr1 = flightsData(acNr1,30); %dit is unknown voor acNr2
 
 %It can never be more than potentialFuelSavings
 
-time_constant_dealless = 2;
-time_constant_delay = 4;
+time_constant_dealless = 4;
+time_constant_delay = 9;
 
 factor_no_deal = 1-exp(-time_without_deal_acNr1/time_constant_dealless);
 factor_delay = exp(-pctDelay_acNr1/time_constant_delay);

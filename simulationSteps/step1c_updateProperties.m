@@ -16,6 +16,9 @@
 % winning bid is selected in the auctions.
 
 %% Update the relevant flight properties if formation is accepted.
+%LOG THE DEAL
+dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings, t, Xjoining, Yjoining]];
+
 
 % Add the potential fuel savings that are realized now the formation is
 % accepted to the total fuel savings.

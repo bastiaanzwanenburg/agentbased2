@@ -106,7 +106,7 @@ for simrun = 1:nSimulations
     %% Prepare the (new) simulation run.
     % Remove previously obtained data from the variables.
     clearvars flightsDataRecordings flightsDataReal flightsData
-
+    simrun
     % Load the initial flight data.
     flightsData = squeeze(flightsInitialSchedule(simrun,:,:));
 

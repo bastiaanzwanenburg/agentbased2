@@ -200,7 +200,7 @@ for i = 1:length(communicationCandidates(:,1))
                 flightsData(acNr2,30) = 0;
                 %Log that this aircraft has been in a formation
                 flightsData([acNr1,acNr2],31) = 1; %log that this aircraft has been in a deal at all
-                dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings, t]];
+                %dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings, t]];
             end
         end
                    

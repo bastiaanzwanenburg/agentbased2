@@ -33,6 +33,9 @@ extraFlightTimePctPerRun = zeros(nSimulations,1); % [%]
 % Number of aircraft that have been in a formation at all
 flightsInFormation = zeros(nSimulations,1);
 
+pctDeals = zeros(nSimulations,200); %so we can have max t=2
+pctDeals(find(pctDeals==0)) = 1;
+
 heatMapLocations = [];
 dealLog = [];
 

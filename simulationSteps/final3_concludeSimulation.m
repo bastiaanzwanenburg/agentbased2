@@ -8,6 +8,9 @@
 
 %% Concluding data.
 
+hold on
+scatter(dealLog(:,7), dealLog(:,8));
+
 % This function determines the realized fuel savings, the extra flight time
 % due to formation flying, and the extra distance flown due to formation
 % flying.
@@ -53,12 +56,13 @@ if negotiationTechnique == 2
     pctFuelSavedContractors = totalFuelSavedContractors / totalFuelSaved;
 end
 
-for i=1:t
     
+TlastDeal = max(dealLog(:,6));
+Ndeals = length(dealLog(:,6));
+for i=1:TlastDeal
+    pctDeals(simrun,i) = length(find(dealLog(:,6)<=i))/Ndeals;
+end
 
-pctDeals = zeros(200,simrun);
-pctDeals
-pctDeals(1:length(dealLog(:,6)), simrun ) = dealLog(:,6)/max(dealLog(:,6));
 
 
 
