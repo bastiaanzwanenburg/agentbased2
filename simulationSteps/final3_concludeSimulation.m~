@@ -52,14 +52,8 @@ if negotiationTechnique == 2
     pctFuelSavedManagers = totalFuelSavedManagers / totalFuelSaved;
     pctFuelSavedContractors = totalFuelSavedContractors / totalFuelSaved;
 end
-
-for i=1:t
-    
-
-pctDeals = zeros(200,simrun);
-pctDeals
-pctDeals(1:length(dealLog(:,6)), simrun ) = dealLog(:,6)/max(dealLog(:,6));
-
+pctDeals = zeros(simrun,
+pctDeals(simrun) = dealLog(6,:)/length(dealLog(6,:));
 
 
 %% Clear some variables.
