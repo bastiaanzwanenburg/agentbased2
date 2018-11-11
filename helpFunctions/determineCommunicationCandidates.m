@@ -73,6 +73,10 @@ if length(flightsData(:,1)) >= 2
                     < 1e-5 && abs(flightsData(acNr1(i),15)- ...
                     flightsData(acNr2(i),15)) < 1e-5 
                 combinationAble(i) = 1;
+            %Alliance flights can always communicate through relay,
+            %which is provided by the alliance HQ.
+            elseif flightsData(acNr1(i),25)==2 && flightsData(acNr2(i),25)==2
+                combinationAble(i) = 1;
             else
                 combinationAble(i) = 0;
             end

@@ -13,7 +13,7 @@ nSimulations = 1;
 communicationRange = 500;                                             
 
 % Percentage of aircraft in simulation that are part of the alliance [%].
-percentageAlliance = 40;                                                    
+percentageAlliance = 0;                                                    
 
 % Number of aircraft (only for when creating random flight schedules).
 nAircraft = 100;    
@@ -26,7 +26,7 @@ dt = 300;
 negotiationTechnique = 2; 
 
 % Visualize the results (0: no visualization, 1: visualization).
-visualizationOption = 1;
+visualizationOption = 0;
 
 % Fix the seed of the random number generator (RNG). If fixed, the same
 % random flight schedules ('nSimulations' schedules in total) will be

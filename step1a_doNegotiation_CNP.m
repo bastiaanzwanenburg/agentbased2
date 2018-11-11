@@ -35,8 +35,7 @@
 %blalballa
 
 for i = 1:length(communicationCandidates(:,1))   
-    %make new biddingcandidates list in which a contractor can store
-    %potential bids
+    
 
     
     % Store flight ID of flight i in variable.
@@ -67,18 +66,18 @@ for i = 1:length(communicationCandidates(:,1))
        bidbook(acNr1,:) = zeros(1,12);
    end
    
-   %If no deal for a long time; make a deal
-   time_without_deal = flightsData(acNr1,30);
-   time_constant = 5;
-   if exp(-time_without_deal/time_constant) < rand
-       %Then change
-       if flightsData(acNr1,29) == 0
-           bidbook(acNr1,:) = zeros(1,12);
-           flightsData(acNr1,30) = 1;
-       else
-           flightsData(acNr1,30) = 0;
-       end
-   end
+   %If no deal for a long time; 
+%    time_without_deal = flightsData(acNr1,30);
+%    time_constant = 5;
+%    if exp(-time_without_deal/time_constant) < rand
+%        %Then change
+%        if flightsData(acNr1,29) == 0
+%            bidbook(acNr1,:) = zeros(1,12);
+%            flightsData(acNr1,30) = 1;
+%        else
+%            flightsData(acNr1,30) = 0;
+%        end
+%    end
    
    
    %should change.
@@ -135,7 +134,7 @@ for i = 1:length(communicationCandidates(:,1))
             %depending on ratio, make a bid
             
             
-            fuelSavingsOffer = min(1,(1-ratio_managers_contractors+flightsData(acNr1,30)/10))*potentialFuelSavings; %so if there are more managers, bid lesss
+            fuelSavingsOffer = min(1,(1-ratio_managers_contractors/2-flightsData(acNr1,30)/10))*potentialFuelSavings; %so if there are more managers, bid lesss
             if flightsData(acNr1,25) == 2 && flightsData(acNr2,25) == 2 %IF Both are alliance
                 fuelSavingsOffer = potentialFuelSavings;
             end
@@ -170,7 +169,9 @@ for i = 1:length(communicationCandidates(:,1))
 
             pctFuelSavingsOffer = fuelSavingsOffer / potentialFuelSavings;
             %if more managers than contractors, be greedy
-            
+            if pctFuelSavingsOffer <0
+                'pause'
+            end
             if pctFuelSavingsOffer > (1-ratio_managers_contractors-flightsData(acNr1,30)/10)
                 accept_deal = 1;
             end
@@ -203,7 +204,6 @@ for i = 1:length(communicationCandidates(:,1))
                 %Log that this aircraft has been in a formation
                 flightsData([acNr1,acNr2],31) = 1; %log that this aircraft has been in a deal at all
                 dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings]];
-            elseif accept_deal == 0
             end
         end
                    
