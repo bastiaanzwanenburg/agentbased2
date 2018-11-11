@@ -32,48 +32,100 @@
 % step1c_updateProperties.m.
 
 %% Loop through the combinations of flights that are allowed to communicate.
-for i = 1:length(communicationCandidates(:,1))     
+
+for i = 1:length(communicationCandidates(:,1))
     % Store flight ID of flight i in variable.
-    acNr1 = communicationCandidates(i,1);     
-    
+    acNr1 = communicationCandidates(i,1);
+    flightsData(acNr1,30)=flightsData(acNr1,30)+1;
     % Determine the number of communication candidates for flight i.
-    nCandidates = nnz(communicationCandidates(i,2:end)); 
+    nCandidates = nnz(communicationCandidates(i,2:end));
+    
+    n_auctioneers = 0;
+    n_bidders = 0;
 
-    % Loop over all candidates of flight i.
+    
+    %%Determine auctioneer/bidder ratio
     for j = 2:nCandidates+1
-        % Store flight ID of candidate flight j in variable.
-        acNr2 = communicationCandidates(i,j);  
+        acNr2 = communicationCandidates(i,j);
         
-        % Check whether the flights are still available for communication.
-        if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1             
-            % This file contains code to perform the routing and
-            % synchronization, and to determine the potential fuel savings.
-            step1b_routingSynchronizationFuelSavings
+        if(flightsData(acNr2,29)) == 1
+            n_auctioneers = n_auctioneers + 1;
+        else
+            n_bidders = n_bidders + 1;
+        end
+    end
+    ratio_auctioneers_bidders = n_auctioneers / (n_auctioneers + n_bidders);
 
-            % If the involved flights can reduce their cumulative fuel burn
-            % the formation route is accepted. This shows the greedy
-            % algorithm, where the first formation with positive fuel
-            % savings is accepted.
-            if potentialFuelSavings > 0     
-                % In the greedy algorithm the fuel savings are divided
-                % equally between acNr1 and acNr2, according to the
-                % formation size of both flights. In the auction the value
-                % of fuelSavingsOffer is decided upon by the bidding agent.
-                fuelSavingsOffer = potentialFuelSavings* ...
-                    flightsData(acNr1,19)/ ...
-                    (flightsData(acNr1,19) + flightsData(acNr2,19));
-
-                % In the greedy algorithm the future fuel savings are
-                % divided equally between acNr1 and acNr2, according to the
-                % formation size of both flights. This is also the case for
-                % the auctions.
-                divisionFutureSavings = flightsData(acNr1,19)/ ...
-                    (flightsData(acNr1,19) + flightsData(acNr2,19));
+    
+    if ratio_auctioneers_bidders < 0.5
+        flightsData(acNr1, 29) = 1; %so this can change every iteration
+    end
+    
+    %%Start deal-making process: so we only simulate the auctioneer, who
+    %%asks every bidder in his proximity 
+    if flightsData(acNr1,29)==1 %if is auctioneer
+        receivedBids = []; %bids: [acNr2, bid]
+        
+        % Loop over all candidates of flight i.
+        for j = 2:nCandidates+1
+            % Store flight ID of candidate flight j in variable.
+            acNr2 = communicationCandidates(i,j);
+            
+            % Check whether the flights are still available for
+            % communication and whether the other agent is bidder
+            if flightsData(acNr1,2) == 1 && flightsData(acNr2,2) == 1 && flightsData(acNr2,29)==0
+                % This file contains code to perform the routing and
+                % synchronization, and to determine the potential fuel
+                % savings.
+                valueForBidder = 1;
+                step1aa_calcTrueValue %acNr1 is auctioneer, acNr2 is bidder
+                if trueValue > 0 %this is the truevalue that the bidder wants to pay to the auctioneer
+                    bid = trueValue*exp(-(nCandidates)/10);
+                    receivedBids = [receivedBids; [acNr2, bid, potentialFuelSavings]];
+                end
                 
                 % Update the relevant flight properties for the formation
                 % that is accepted.
-                step1c_updateProperties
-            end          
+                %step1c_updateProperties
+            end
         end
+        %now do the auction itself. 
+       
+        if ~isempty(receivedBids)
+            
+            valueForBidder = 0; %this is an input for calcTrueValue --> so it will see acnr1 as auctioneer
+            step1aa_calcTrueValue
+            averageFuelSavings = mean(receivedBids(:,3));
+            minimum_bid = averageFuelSavings*pctTrueValueAuctioneer;
+            auction_value = minimum_bid;
+
+            
+            while minimum_bid <= auction_value
+                possible_bidders = find(receivedBids(:,2)>auction_value);
+                
+                if length(possible_bidders) == 1 %one remaining bidder, so he wins
+                    winner = receivedBids(possible_bidders,1);
+                    acNr2 = winner(1);
+                    fuelSavingsOffer = auction_value;
+                    
+                    auction_value = -1; %to stop the while
+                    
+                    step1b_routingSynchronizationFuelSavings %This could be made redundant to increase performance, but is easier to program this way
+                    divisionFutureSavings = flightsData(acNr1,19)/ ...
+                        (flightsData(acNr1,19) + flightsData(acNr2,19));
+                    step1c_updateProperties %Make the deal
+                    flightsData(acNr1,30)=0;
+                    flightsData(acNr2,30)=0;
+                    
+                elseif length(possible_bidders) > 1 %more than 1 remaining bidder, so increase auctino value 
+                    auction_value = auction_value*1.05;
+                else
+                    auction_value = -1;
+                end
+            end
+        end
+        
+       
+      
     end
 end

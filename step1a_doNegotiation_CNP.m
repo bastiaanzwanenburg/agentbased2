@@ -133,8 +133,7 @@ for i = 1:length(communicationCandidates(:,1))
             potentialFuelSavings = potentialManagers(biddingID,3); %potential Fuelsavings
             %depending on ratio, make a bid
             
-            
-            fuelSavingsOffer = min(1,(1-ratio_managers_contractors/2-flightsData(acNr1,30)/10))*potentialFuelSavings; %so if there are more managers, bid lesss
+            fuelSavingsOffer = min(1,(ratio_managers_contractors/3+flightsData(acNr1,30)/15))*potentialFuelSavings; %so if there are more managers, bid lesss
             if flightsData(acNr1,25) == 2 && flightsData(acNr2,25) == 2 %IF Both are alliance
                 fuelSavingsOffer = potentialFuelSavings;
             end
@@ -172,7 +171,7 @@ for i = 1:length(communicationCandidates(:,1))
             if pctFuelSavingsOffer <0
                 'pause'
             end
-            if pctFuelSavingsOffer > (1-ratio_managers_contractors-flightsData(acNr1,30)/10)
+            if pctFuelSavingsOffer > max(0,(1-ratio_managers_contractors-flightsData(acNr1,30)/10))
                 accept_deal = 1;
             end
 %             if ratio_managers_contractors > 0.8 && pctFuelSavingsOffer > max(0.01, 0.3 - flightsData(acNr1,30)/10)
@@ -203,7 +202,7 @@ for i = 1:length(communicationCandidates(:,1))
                 flightsData(acNr2,30) = 0;
                 %Log that this aircraft has been in a formation
                 flightsData([acNr1,acNr2],31) = 1; %log that this aircraft has been in a deal at all
-                dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings]];
+                dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings, t]];
             end
         end
                    

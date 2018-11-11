@@ -31,4 +31,4 @@ else
     trueValue = potentialFuelSavings*(1-factor_no_deal); %auctinoeer neemt geen delay mee; arbitrarily
 end
 
-
+pctTrueValueAuctioneer = factor_no_deal*factor_delay;

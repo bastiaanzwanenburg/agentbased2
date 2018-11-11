@@ -81,7 +81,7 @@ for i = 1:length(communicationCandidates(:,1))
                 step1aa_calcTrueValue %acNr1 is auctioneer, acNr2 is bidder
                 if trueValue > 0 %this is the truevalue that the bidder wants to pay to the auctioneer
                     bid = trueValue*exp(-(nCandidates)/10);
-                    receivedBids = [receivedBids; [acNr2, bid]];
+                    receivedBids = [receivedBids; [acNr2, bid, potentialFuelSavings]];
                 end
                 
                 % Update the relevant flight properties for the formation
@@ -96,17 +96,17 @@ for i = 1:length(communicationCandidates(:,1))
             valueForBidder = 0; %this is an input for calcTrueValue --> so it will see acnr1 as auctioneer
             step1aa_calcTrueValue
             
-            minimum_bid = trueValue;
+            averageFuelSavings = mean(receivedBids(:,3));
+            minimum_bid = averageFuelSavings*pctTrueValueAuctioneer;
             
-            auction_value = trueValue * 3;
-            
-            while minimum_bid < auction_value
+            auction_value = 10*minimum_bid;
+            while minimum_bid <= auction_value
                 possible_bidders = find(receivedBids(:,2)>auction_value);
                 if ~isempty(possible_bidders) %if not empty
                     winner = receivedBids(possible_bidders,1);
                     acNr2 = winner(1); %if there is more than 1 bidder meeting the value; arbitrarliy accept the value
                     fuelSavingsOffer = auction_value;
-                    auction_value = 0; %to stop the while
+                    auction_value = -1; %to stop the auction(while)
                     
                     step1b_routingSynchronizationFuelSavings
                     divisionFutureSavings = flightsData(acNr1,19)/ ...
@@ -116,7 +116,7 @@ for i = 1:length(communicationCandidates(:,1))
                     flightsData(acNr2,30)=0;
                     
                 end
-                auction_value = auction_value - 0.1*trueValue;
+                auction_value = auction_value*0.95;
             end
         end
         

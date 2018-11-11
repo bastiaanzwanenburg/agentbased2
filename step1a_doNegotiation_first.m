@@ -78,7 +78,7 @@ for i = 1:length(communicationCandidates(:,1))
                 step1aa_calcTrueValue %acNr1 is auctioneer, acNr2 is bidder
                 if trueValue > 0
                     bid = trueValue*exp(-(nCandidates)/10); %always bid a bit less, how much depends on other agents
-                    receivedBids = [receivedBids; [acNr2, bid]];
+                    receivedBids = [receivedBids; [acNr2, bid, potentialFuelSavings]];
                 end
                 
                 % Update the relevant flight properties for the formation
@@ -93,7 +93,8 @@ for i = 1:length(communicationCandidates(:,1))
             %auctioneer
             valueForBidder = 0; %this is an input for calcTrueValue --> so it will see acnr1 as auctioneer
             step1aa_calcTrueValue
-            minimum_bid = trueValue;
+            averageFuelSavings = mean(receivedBids(:,3));
+            minimum_bid = averageFuelSavings*pctTrueValueAuctioneer;
             
             %It is not necessary to go through the loop: the highest bid,
             %that is higher than the minimum value, is the winner

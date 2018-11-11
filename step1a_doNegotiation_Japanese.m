@@ -1,5 +1,5 @@
 %% step1a_doNegotiation_Japanese.m description
-% Add your Dutch agent models and edit this file to create your English
+% Add your English agent models and edit this file to create your English
 % auction.
 
 % This file uses the matrix generated in determineCommunicationCandidates.m
@@ -42,9 +42,10 @@ for i = 1:length(communicationCandidates(:,1))
     
     n_auctioneers = 0;
     n_bidders = 0;
+
     
+    %%Determine auctioneer/bidder ratio
     for j = 2:nCandidates+1
-        %determine auctioneer/bidder ratio
         acNr2 = communicationCandidates(i,j);
         
         if(flightsData(acNr2,29)) == 1
@@ -60,6 +61,8 @@ for i = 1:length(communicationCandidates(:,1))
         flightsData(acNr1, 29) = 1; %so this can change every iteration
     end
     
+    %%Start deal-making process: so we only simulate the auctioneer, who
+    %%asks every bidder in his proximity 
     if flightsData(acNr1,29)==1 %if is auctioneer
         receivedBids = []; %bids: [acNr2, bid]
         
@@ -76,9 +79,9 @@ for i = 1:length(communicationCandidates(:,1))
                 % savings.
                 valueForBidder = 1;
                 step1aa_calcTrueValue %acNr1 is auctioneer, acNr2 is bidder
-                if trueValue > 0
+                if trueValue > 0 %this is the truevalue that the bidder wants to pay to the auctioneer
                     bid = trueValue*exp(-(nCandidates)/10);
-                    receivedBids = [receivedBids; [acNr2, bid]];
+                    receivedBids = [receivedBids; [acNr2, bid, potentialFuelSavings]];
                 end
                 
                 % Update the relevant flight properties for the formation
@@ -89,29 +92,37 @@ for i = 1:length(communicationCandidates(:,1))
         %now do the auction itself. 
        
         if ~isempty(receivedBids)
-            %bid continuously goes up, starting at the True Value of an
-            %auctioneer
+            
             valueForBidder = 0; %this is an input for calcTrueValue --> so it will see acnr1 as auctioneer
             step1aa_calcTrueValue
-            reserveValue = trueValue;
-            
-            %It is not necessary to go through the loop: the highest bid,
-            %that is higher than the minimum value, is the winner
-            possible_bidders = find(receivedBids(:,2)>reserveValue);
-            
-            if ~isempty(possible_bidders)
-                [~, idBestBid] = max(receivedBids(possible_bidders,2));
-                acNrWinner = receivedBids(possible_bidders(idBestBid),1);
-                fuelSavingsOffer = receivedBids(possible_bidders(idBestBid),2);
-                acNr2 = acNrWinner;
-                step1b_routingSynchronizationFuelSavings
-                divisionFutureSavings = flightsData(acNr1,19)/ ...
-                    (flightsData(acNr1,19) + flightsData(acNr2,19));
-                step1c_updateProperties
-                flightsData(acNr1,30)=0;
-                flightsData(acNr2,30)=0;
-            end
+            averageFuelSavings = mean(receivedBids(:,3));
+            minimum_bid = averageFuelSavings*pctTrueValueAuctioneer;
+            auction_value = minimum_bid;
 
+            
+            while minimum_bid <= auction_value
+                possible_bidders = find(receivedBids(:,2)>auction_value);
+                
+                if length(possible_bidders) == 1 %one remaining bidder, so he wins
+                    winner = receivedBids(possible_bidders,1);
+                    acNr2 = winner(1);
+                    fuelSavingsOffer = auction_value;
+                    
+                    auction_value = -1; %to stop the while
+                    
+                    step1b_routingSynchronizationFuelSavings %This could be made redundant to increase performance, but is easier to program this way
+                    divisionFutureSavings = flightsData(acNr1,19)/ ...
+                        (flightsData(acNr1,19) + flightsData(acNr2,19));
+                    step1c_updateProperties %Make the deal
+                    flightsData(acNr1,30)=0;
+                    flightsData(acNr2,30)=0;
+                    
+                elseif length(possible_bidders) > 1 %more than 1 remaining bidder, so increase auctino value 
+                    auction_value = auction_value*1.05;
+                else
+                    auction_value = -1;
+                end
+            end
         end
         
        
