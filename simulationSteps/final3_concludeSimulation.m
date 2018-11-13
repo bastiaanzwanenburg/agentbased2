@@ -10,6 +10,7 @@
 
 hold on
 scatter(dealLog(:,7), dealLog(:,8));
+hold off
 
 % This function determines the realized fuel savings, the extra flight time
 % due to formation flying, and the extra distance flown due to formation
@@ -43,18 +44,18 @@ extraDistancePctPerRun(simrun) = extraDistancePct; % [%]
 extraFlightTimePctPerRun(simrun) = extraFlightTimePct; % [%]
 
 % Percentage of normal aircraft that have been in a 
-flightsInFormation = length(find(flightsData([1:nAircraft],27)>0))/nAircraft;
+flightsInFormation(simrun) = length(find(flightsData([1:nAircraft],27)>0))/nAircraft;
 
 % For the CNP: Fuel saving per manager and contractor
-if negotiationTechnique == 2
-    totalFuelSavedManagers = sum(dealLog(:,4));
-    totalFuelSaved = sum(dealLog(:,5));
-    totalFuelSavedContractors = totalFuelSaved - totalFuelSavedManagers;
+%if negotiationTechnique == 2
+    totalFuelSavedManagers(simrun) = sum(dealLog(:,4));
+    totalFuelSaved(simrun) = sum(dealLog(:,5));
+    totalFuelSavedContractors(simrun) = totalFuelSaved(simrun) - totalFuelSavedManagers(simrun);
 
 
-    pctFuelSavedManagers = totalFuelSavedManagers / totalFuelSaved;
-    pctFuelSavedContractors = totalFuelSavedContractors / totalFuelSaved;
-end
+    pctFuelSavedManagers(simrun) = totalFuelSavedManagers(simrun) / totalFuelSaved(simrun);
+    pctFuelSavedContractors(simrun) = totalFuelSavedContractors(simrun) / totalFuelSaved(simrun);
+%end
 
     
 TlastDeal = max(dealLog(:,6));

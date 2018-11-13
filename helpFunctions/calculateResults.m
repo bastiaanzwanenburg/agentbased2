@@ -143,6 +143,9 @@ for i = nTotal:-1:1
         % Determine the two followers of flight i.
         flightsWithFlightI = find(FDR(M_changes_at_t(1),1:nTotal,22)==i);
         % Store the two flight IDs.
+        if isempty(flightsWithFlightI)
+            'pause'
+        end
         acNr1 = flightsWithFlightI(1);
         acNr2 = flightsWithFlightI(2);
         % Loop through the time steps at which flight i forms a formation.

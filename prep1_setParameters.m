@@ -7,7 +7,7 @@
 %% Parameters.
 
 % Number of simulation runs.
-nSimulations = 1; 
+nSimulations = 5; 
 
 % Value of the maximum communication distance BETWEEN two aircraft [km]. 
 communicationRange = 500;                                             
@@ -26,7 +26,7 @@ dt = 300;
 negotiationTechnique = 2; 
 
 % Visualize the results (0: no visualization, 1: visualization).
-visualizationOption = 1;
+visualizationOption = 0;
 
 % Fix the seed of the random number generator (RNG). If fixed, the same
 % random flight schedules ('nSimulations' schedules in total) will be
