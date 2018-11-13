@@ -181,17 +181,7 @@ for i = 1:length(communicationCandidates(:,1))
 %             end
             
             %we stored all sync info in the bidbook, get that.
-            divisionFutureSavings = bidbook(acNr2,3); 
-            
-%             Xjoining = bidbook(acNr2,4);
-%             Yjoining = bidbook(acNr2,5);
-%             Xsplitting = bidbook(acNr2,6);
-%             Ysplitting = bidbook(acNr2,7);
-%             VsegmentAJ_acNr1 = bidbook(acNr2,9);
-%             VsegmentBJ_acNr2 = bidbook(acNr2,8);
-%             timeAdded_acNr1 = bidbook(acNr2,11); 
-%             timeAdded_acNr2 = bidbook(acNr2,10); %(8 and 9) and (10 and 11) are swapped to swap acNr2 and acNr1
-%                      
+            divisionFutureSavings = bidbook(acNr2,3);   
             if accept_deal == 1
                 step1b_routingSynchronizationFuelSavings
                 step1c_updateProperties %do this only if a deal is made
@@ -199,7 +189,6 @@ for i = 1:length(communicationCandidates(:,1))
                 flightsData(acNr1,30) = 0;
                 flightsData(acNr2,30) = 0;
                 %Log that this aircraft has been in a formation
-                flightsData([acNr1,acNr2],31) = 1; %log that this aircraft has been in a deal at all
                 %dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings, t]];
             end
         end
