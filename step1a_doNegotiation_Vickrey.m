@@ -120,8 +120,5 @@ for i = 1:length(communicationCandidates(:,1))
             end
 
         end
-        
-       
-      
     end
 end

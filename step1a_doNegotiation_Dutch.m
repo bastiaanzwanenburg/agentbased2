@@ -81,12 +81,12 @@ for i = 1:length(communicationCandidates(:,1))
                 step1aa_calcTrueValue %acNr1 is auctioneer, acNr2 is bidder
                 if trueValue > 0 %this is the truevalue that the bidder wants to pay to the auctioneer
                     bid = trueValue*exp(-(nCandidates)/10);
+%                     if flightsData(acNr1,25)==2 & flightsData(acNr1,25)==2
+%                         bid = trueValue;
+%                     end
                     receivedBids = [receivedBids; [acNr2, bid, potentialFuelSavings]];
                 end
                 
-                % Update the relevant flight properties for the formation
-                % that is accepted.
-                %step1c_updateProperties
             end
         end
         %now do the auction itself. 
@@ -100,6 +100,7 @@ for i = 1:length(communicationCandidates(:,1))
             minimum_bid = averageFuelSavings*pctTrueValueAuctioneer;
             
             auction_value = 10*minimum_bid;
+            
             while minimum_bid <= auction_value
                 possible_bidders = find(receivedBids(:,2)>auction_value);
                 if ~isempty(possible_bidders) %if not empty

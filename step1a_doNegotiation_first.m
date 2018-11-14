@@ -94,6 +94,7 @@ for i = 1:length(communicationCandidates(:,1))
             valueForBidder = 0; %this is an input for calcTrueValue --> so it will see acnr1 as auctioneer
             step1aa_calcTrueValue
             averageFuelSavings = mean(receivedBids(:,3));
+            
             minimum_bid = averageFuelSavings*pctTrueValueAuctioneer;
             
             %It is not necessary to go through the loop: the highest bid,

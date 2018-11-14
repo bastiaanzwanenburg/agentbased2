@@ -42,7 +42,7 @@ for i = 1:length(communicationCandidates(:,1))
     
     n_auctioneers = 0;
     n_bidders = 0;
-
+    
     
     %%Determine auctioneer/bidder ratio
     for j = 2:nCandidates+1
@@ -55,14 +55,14 @@ for i = 1:length(communicationCandidates(:,1))
         end
     end
     ratio_auctioneers_bidders = n_auctioneers / (n_auctioneers + n_bidders);
-
+    
     
     if ratio_auctioneers_bidders < 0.5
         flightsData(acNr1, 29) = 1; %so this can change every iteration
     end
     
     %%Start deal-making process: so we only simulate the auctioneer, who
-    %%asks every bidder in his proximity 
+    %%asks every bidder in his proximity
     if flightsData(acNr1,29)==1 %if is auctioneer
         receivedBids = []; %bids: [acNr2, bid]
         
@@ -89,43 +89,45 @@ for i = 1:length(communicationCandidates(:,1))
                 %step1c_updateProperties
             end
         end
-        %now do the auction itself. 
-       
+        %now do the auction itself.
+        
         if ~isempty(receivedBids)
             
             valueForBidder = 0; %this is an input for calcTrueValue --> so it will see acnr1 as auctioneer
             step1aa_calcTrueValue
+            
             averageFuelSavings = mean(receivedBids(:,3));
             minimum_bid = averageFuelSavings*pctTrueValueAuctioneer;
-            auction_value = minimum_bid;
-
             
-            while minimum_bid <= auction_value
-                possible_bidders = find(receivedBids(:,2)>auction_value);
-                
-                if length(possible_bidders) == 1 %one remaining bidder, so he wins
-                    winner = receivedBids(possible_bidders,1);
-                    acNr2 = winner(1);
-                    fuelSavingsOffer = auction_value;
+            minimum_bid = 0.0001; %0, but some edge-cases lead to errors when deals of 0 are made.
+            auction_value = minimum_bid;
+            if length(receivedBids(:,1) >= 3)
+                while minimum_bid <= auction_value
+                    possible_bidders = find(receivedBids(:,2)>auction_value);
                     
-                    auction_value = -1; %to stop the while
-                    
-                    step1b_routingSynchronizationFuelSavings %This could be made redundant to increase performance, but is easier to program this way
-                    divisionFutureSavings = flightsData(acNr1,19)/ ...
-                        (flightsData(acNr1,19) + flightsData(acNr2,19));
-                    step1c_updateProperties %Make the deal
-                    flightsData(acNr1,30)=0;
-                    flightsData(acNr2,30)=0;
-                    
-                elseif length(possible_bidders) > 1 %more than 1 remaining bidder, so increase auctino value 
-                    auction_value = auction_value*1.05;
-                else
-                    auction_value = -1;
+                    if length(possible_bidders) == 1 %one remaining bidder, so he wins
+                        winner = receivedBids(possible_bidders,1);
+                        acNr2 = winner(1);
+                        fuelSavingsOffer = auction_value;
+                        
+                        auction_value = -1; %to stop the while
+                        
+                        step1b_routingSynchronizationFuelSavings %This could be made redundant to increase performance, but is easier to program this way
+                        divisionFutureSavings = flightsData(acNr1,19)/ ...
+                            (flightsData(acNr1,19) + flightsData(acNr2,19));
+                        step1c_updateProperties %Make the deal
+                        flightsData(acNr1,30)=0;
+                        flightsData(acNr2,30)=0;
+                        
+                    elseif length(possible_bidders) > 1 %more than 1 remaining bidder, so increase auctino value
+                        auction_value = (auction_value+10)*1.05; %+1 to get away from 0.
+                    else %this should never happen, but if it happens, cut the while loop
+                        auction_value = -1;
+                    end
                 end
             end
         end
-        
-       
-      
+            
+            
+        end
     end
-end

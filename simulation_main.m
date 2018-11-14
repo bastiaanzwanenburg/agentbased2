@@ -58,10 +58,10 @@
 tic
 % Close figures.
 close all
-% Clear workspace.
+% Clear all.
 clearvars 
 % Clear command window.
-clc
+clear
 % Add paths.
 addpath('helpFunctions')
 addpath('simulationSteps')
@@ -105,7 +105,9 @@ end
 for simrun = 1:nSimulations
     %% Prepare the (new) simulation run.
     % Remove previously obtained data from the variables.
-    clearvars flightsDataRecordings flightsDataReal flightsData
+    clearvars flightsDataRecordings flightsDataReal flightsData dealLog
+    dealLog = []; %this could be pre-allocated for better code
+
     simrun
     % Load the initial flight data.
     flightsData = squeeze(flightsInitialSchedule(simrun,:,:));

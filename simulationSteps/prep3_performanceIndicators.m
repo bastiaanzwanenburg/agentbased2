@@ -43,5 +43,4 @@ pctDeals = zeros(nSimulations,200); %so we can have max t=2
 pctDeals(find(pctDeals==0)) = 1;
 
 heatMapLocations = [];
-dealLog = [];
 

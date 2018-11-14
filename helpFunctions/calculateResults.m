@@ -143,28 +143,27 @@ for i = nTotal:-1:1
         % Determine the two followers of flight i.
         flightsWithFlightI = find(FDR(M_changes_at_t(1),1:nTotal,22)==i);
         % Store the two flight IDs.
-        if isempty(flightsWithFlightI)
-            'pause'
-        end
-        acNr1 = flightsWithFlightI(1);
-        acNr2 = flightsWithFlightI(2);
-        % Loop through the time steps at which flight i forms a formation.
-        for j = 1:size(M_changes_at_t,1) 
-            % Store the time step for shorter code.
-            timeStep = M_changes_at_t(j);
-            % Distribute the fuel savings due to formations formed by
-            % flight i over the followers of flight i.
+        if isempty(flightsWithFlightI) ~= 1 %workaround
+            acNr1 = flightsWithFlightI(1);
+            acNr2 = flightsWithFlightI(2);
+            % Loop through the time steps at which flight i forms a formation.
+            for j = 1:size(M_changes_at_t,1)
+                % Store the time step for shorter code.
+                timeStep = M_changes_at_t(j);
+                % Distribute the fuel savings due to formations formed by
+                % flight i over the followers of flight i.
+                fuelSavingsPerFlight(acNr1) = fuelSavingsPerFlight(acNr1) + ...
+                    FDR(timeStep,i,27)*FDR(timeStep,acNr1,28);
+                fuelSavingsPerFlight(acNr2) = fuelSavingsPerFlight(acNr2) + ...
+                    FDR(timeStep,i,27)*FDR(timeStep,acNr2,28);
+            end
+            % Distribute the total fuel savings that flight i collected from
+            % its own formation leader(s) over the followers of flight i.
             fuelSavingsPerFlight(acNr1) = fuelSavingsPerFlight(acNr1) + ...
-                FDR(timeStep,i,27)*FDR(timeStep,acNr1,28);    
+                fuelSavingsPerFlight(i)*FDR(timeStep,acNr1,28);
             fuelSavingsPerFlight(acNr2) = fuelSavingsPerFlight(acNr2) + ...
-                FDR(timeStep,i,27)*FDR(timeStep,acNr2,28); 
+                fuelSavingsPerFlight(i)*FDR(timeStep,acNr2,28);
         end
-        % Distribute the total fuel savings that flight i collected from
-        % its own formation leader(s) over the followers of flight i.
-        fuelSavingsPerFlight(acNr1) = fuelSavingsPerFlight(acNr1) + ...
-            fuelSavingsPerFlight(i)*FDR(timeStep,acNr1,28);
-        fuelSavingsPerFlight(acNr2) = fuelSavingsPerFlight(acNr2) + ...
-            fuelSavingsPerFlight(i)*FDR(timeStep,acNr2,28);
     end
 end
 

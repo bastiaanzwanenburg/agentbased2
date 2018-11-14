@@ -11,13 +11,13 @@ time_without_deal_acNr1 = flightsData(acNr1,30); %dit is unknown voor acNr2
 
 %It can never be more than potentialFuelSavings
 
-time_constant_dealless = 4;
-time_constant_delay = 9;
+time_constant_dealless = 6;
+time_constant_delay = 6;
 
 factor_no_deal = 1-exp(-time_without_deal_acNr1/time_constant_dealless);
 factor_delay = exp(-pctDelay_acNr1/time_constant_delay);
 
-bothAlliance = (flightsData(acNr1,25)==flightsData(acNr1,25));
+bothAlliance = (flightsData(acNr1,25)==2 && flightsData(acNr2,25) ==2);
 
 if potentialFuelSavings==0
     trueValue = 0;
@@ -31,4 +31,4 @@ else
     trueValue = potentialFuelSavings*(1-factor_no_deal); %auctinoeer neemt geen delay mee; arbitrarily
 end
 
-pctTrueValueAuctioneer = factor_no_deal*factor_delay;
+pctTrueValueAuctioneer = 1-factor_no_deal*factor_delay;

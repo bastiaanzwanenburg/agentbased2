@@ -61,26 +61,27 @@ for i = 1:length(communicationCandidates(:,1))
        
    if ratio_managers_contractors < 0.5
        %if there are only a few managers in the area, become manager
-       %and ditch all bids made by me
        flightsData(acNr1, 29) = 1;
-       bidbook(acNr1,:) = zeros(1,12);
+       bidbook(acNr1,:) = zeros(1,12); %managers cannot have outstanding bids, so ditch these
    end
    
-   %If no deal for a long time; 
-%    time_without_deal = flightsData(acNr1,30);
-%    time_constant = 5;
-%    if exp(-time_without_deal/time_constant) < rand
-%        %Then change
-%        if flightsData(acNr1,29) == 0
-%            bidbook(acNr1,:) = zeros(1,12);
-%            flightsData(acNr1,30) = 1;
-%        else
-%            flightsData(acNr1,30) = 0;
-%        end
-%    end
-   
-   
-   %should change.
+%This is something that we used to have in the model, but worsened system performance by about 20%       
+%If no deal for a long time;
+%          time_without_deal = flightsData(acNr1,30);
+%          time_constant = 5;
+%          if exp(-time_without_deal/time_constant) < rand
+%              %Then change
+%              if flightsData(acNr1,29) == 0
+%                  bidbook(acNr1,:) = zeros(1,12);
+%                  bidbook(find(bidbook(:,1)==acNr1),:)=0;
+%                  flightsData(acNr1,30) = 1;
+%              else
+%                  flightsData(acNr1,30) = 0;
+%              end
+%          end
+%    
+%    
+%    %should change.
      
     %% START code for contractors
     if(flightsData(acNr1,29)==0)
@@ -102,10 +103,7 @@ for i = 1:length(communicationCandidates(:,1))
                 % synchronization, and to determine the potential fuel savings.
                 step1b_routingSynchronizationFuelSavings
 
-                % If the involved flights can reduce their cumulative fuel burn
-                % the formation route is accepted. This shows the greedy
-                % algorithm, where the first formation with positive fuel
-                % savings is accepted.
+              
                 
                 if potentialFuelSavings > 0 && flightsData(acNr2,29)==1
                     % In the greedy algorithm the fuel savings are divided
@@ -134,7 +132,7 @@ for i = 1:length(communicationCandidates(:,1))
             %depending on ratio, make a bid
             
             fuelSavingsOffer = min(0.99,(ratio_managers_contractors/3+flightsData(acNr1,30)/15))*potentialFuelSavings; %so if there are more managers, bid lesss
-            if flightsData(acNr1,25) == 2 && flightsData(acNr2,25) == 2 %IF Both are alliance
+            if (flightsData(acNr1,25) == 2 && flightsData(acNr2,25) == 2) %IF Both are alliance
                 fuelSavingsOffer = potentialFuelSavings;
             end
             %make bid with all necessary info
