@@ -161,4 +161,8 @@ for simrun = 1:nSimulations
     % flying.
     final3_concludeSimulation;
 end
+pctFuelSavedContractors = transpose(pctFuelSavedContractors);
+pctFuelSavedManagers = transpose(pctFuelSavedManagers);
+a = [extraDistancePctPerRun, extraFlightTimePctPerRun,flightsInFormation,fuelSavingsAlliancePctPerRun,fuelSavingsNonAlliancePctPerRun,pctFuelSavedContractors,pctFuelSavedManagers,totalFuelSaved,totalFuelSavedContractors,totalFuelSavedManagers];
+
 toc

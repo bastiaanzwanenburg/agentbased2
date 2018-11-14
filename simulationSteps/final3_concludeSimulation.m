@@ -43,6 +43,13 @@ extraDistancePctPerRun(simrun) = extraDistancePct; % [%]
 % the total flight time of only solo flights were flown.
 extraFlightTimePctPerRun(simrun) = extraFlightTimePct; % [%]
 
+nDeals = length(dealLog(:,9));
+pctDealsAbove250(simrun) = length(find(dealLog(:,9)>=250*2))/nDeals*100;
+pctDealsAbove500(simrun) = length(find(dealLog(:,9)>=500*2))/nDeals*100;
+pctDealsAbove750(simrun) = length(find(dealLog(:,9)>=750*2))/nDeals*100;
+
+
+
 % Percentage of normal aircraft that have been in a 
 flightsInFormation(simrun) = length(find(flightsData([1:nAircraft],27)>0))/nAircraft;
 
@@ -65,9 +72,6 @@ for i=1:TlastDeal
 end
 
 
-pctFuelSavedContractors = transpose(pctFuelSavedContractors);
-pctFuelSavedManagers = transpose(pctFuelSavedManagers);
-a = [extraDistancePctPerRun, extraFlightTimePctPerRun,flightsInFormation,fuelSavingsAlliancePctPerRun,fuelSavingsNonAlliancePctPerRun,pctFuelSavedContractors,pctFuelSavedManagers,totalFuelSaved,totalFuelSavedContractors,totalFuelSavedManagers];
 
 
 %% Clear some variables.

@@ -56,6 +56,7 @@ if length(flightsData(:,1)) >= 2
             currentX = [flightsData(acNr1(i),14),flightsData(acNr2(i),14)];
             currentY = [flightsData(acNr1(i),15),flightsData(acNr2(i),15)];
             
+            
             % Determine (possible) intersection coordinates of two
             % communication circles.
             [intersectX,~] = circcirc(currentX(1),currentY(1), ...
@@ -66,6 +67,7 @@ if length(flightsData(:,1)) >= 2
             % not NaN), the circles intersect and set is able to
             % communicate.
             if abs(intersectX) >= 0
+
                 combinationAble(i) = 1;
             % If acNr1 and acNr2 have the same current location, the
             % combination is able to communicate.
@@ -75,8 +77,8 @@ if length(flightsData(:,1)) >= 2
                 combinationAble(i) = 1;
             %Alliance flights can always communicate through relay,
             %which is provided by the alliance HQ.
-            %elseif flightsData(acNr1(i),25)==2 && flightsData(acNr2(i),25)==2
-            %    combinationAble(i) = 1;
+%             elseif flightsData(acNr1(i),25)==2 && flightsData(acNr2(i),25)==2
+%                 combinationAble(i) = 1;
             else
                 combinationAble(i) = 0;
             end

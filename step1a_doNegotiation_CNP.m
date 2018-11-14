@@ -131,7 +131,7 @@ for i = 1:length(communicationCandidates(:,1))
             potentialFuelSavings = potentialManagers(biddingID,3); %potential Fuelsavings
             %depending on ratio, make a bid
             
-            fuelSavingsOffer = min(0.99,(ratio_managers_contractors/3+flightsData(acNr1,30)/15))*potentialFuelSavings; %so if there are more managers, bid lesss
+            fuelSavingsOffer = min(0.99,(ratio_managers_contractors/2+flightsData(acNr1,30)/time_constant))*potentialFuelSavings; %so if there are more managers, bid lesss
             if (flightsData(acNr1,25) == 2 && flightsData(acNr2,25) == 2) %IF Both are alliance
                 fuelSavingsOffer = potentialFuelSavings;
             end
@@ -173,7 +173,7 @@ for i = 1:length(communicationCandidates(:,1))
             
             %we stored all sync info in the bidbook, get that.
             divisionFutureSavings = bidbook(acNr2,3);   
-            if accept_deal == 1
+            if accept_deal == 1 && flightsData(acNr1, 1) == acNr1 && flightsData(acNr2,1) == acNr2
                 step1b_routingSynchronizationFuelSavings
                 step1c_updateProperties %do this only if a deal is made
                 bidbook(acNr2,:) = 0; %ditch all bids made by acNr2

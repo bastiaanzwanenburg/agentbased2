@@ -17,7 +17,8 @@
 
 %% Update the relevant flight properties if formation is accepted.
 %LOG THE DEAL
-dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings, t, Xjoining, Yjoining]];
+distanceBetweenDealmakers = sqrt( (flightsData(acNr1,14)-flightsData(acNr2,14))^2 +(flightsData(acNr1,15)-flightsData(acNr2,15))^2);
+dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings, t, Xjoining, Yjoining, distanceBetweenDealmakers]];
 
 
 % Add the potential fuel savings that are realized now the formation is

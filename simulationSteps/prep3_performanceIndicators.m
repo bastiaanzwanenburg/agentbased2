@@ -39,6 +39,11 @@ totalFuelSaved = zeros(nSimulations,1);
 
 totalFuelSavedContractors = zeros(nSimulations,1);
 
+pctDealsAbove250 = zeros(nSimulations,1);
+pctDealsAbove500 = zeros(nSimulations,1);
+pctDealsAbove750 = zeros(nSimulations,1);
+
+
 pctDeals = zeros(nSimulations,200); %so we can have max t=2
 pctDeals(find(pctDeals==0)) = 1;
 
