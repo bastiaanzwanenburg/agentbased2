@@ -65,6 +65,9 @@ for i=1:TlastDeal
 end
 
 
+pctFuelSavedContractors = transpose(pctFuelSavedContractors);
+pctFuelSavedManagers = transpose(pctFuelSavedManagers);
+a = [extraDistancePctPerRun, extraFlightTimePctPerRun,flightsInFormation,fuelSavingsAlliancePctPerRun,fuelSavingsNonAlliancePctPerRun,pctFuelSavedContractors,pctFuelSavedManagers,totalFuelSaved,totalFuelSavedContractors,totalFuelSavedManagers];
 
 
 %% Clear some variables.
