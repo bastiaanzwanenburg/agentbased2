@@ -51,7 +51,7 @@ pctDealsAbove750(simrun) = length(find(dealLog(:,9)>=750*2))/nDeals*100;
 
 
 % Percentage of normal aircraft that have been in a 
-flightsInFormation(simrun) = length(find(flightsData([1:nAircraft],27)>0))/nAircraft;
+flightsInFormation(simrun) = length(find(flightsData([1:nAircraft],27)~=0))/nAircraft;
 
 % For the CNP: Fuel saving per manager and contractor
 %if negotiationTechnique == 2

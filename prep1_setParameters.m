@@ -7,15 +7,19 @@
 %% Parameters.
 
 % Number of simulation runs.
-nSimulations = 50; 
+nSimulations = 5; 
 
 % Value of the maximum communication distance BETWEEN two aircraft [km]. 
-communicationRange = 750;                                             
+communicationRange = 500;                                             
 
 % Percentage of aircraft in simulation that are part of the alliance [%].
 percentageAlliance = 40;  
 
+%Time constant (?)
 time_constant = 8;
+
+%Coordination
+coordination=0;
 
 % Number of aircraft (only for when creating random flight schedules).
 nAircraft = 100;    

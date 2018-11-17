@@ -129,8 +129,7 @@ engaged = k(:,20);
 engaged = engaged(flightID);
 alliance = k(:,25);
 alliance = alliance(flightID);
-auctioneer = k(:,29);
-auctioneer = auctioneer(flightID);
+
 if alliance == 1
     alliance = char(strcat(num2str(alliance), ' (non-alliance)'));
 elseif alliance == 2
@@ -144,8 +143,7 @@ txt = {['ID: ',num2str(flightID)],...
        ['Engaged to: ',num2str(engaged)],...
        ['Form. size: ',num2str(weight)],...
        ['Alliance: ',alliance],...
-       ['Max. delay: ',num2str(maxDelay)]
-       ['Auctioneer/bidder: ' num2str(auctioneer)]};
+       ['Max. delay: ',num2str(maxDelay)]};
 end
 
 % Pausing the simulation.
