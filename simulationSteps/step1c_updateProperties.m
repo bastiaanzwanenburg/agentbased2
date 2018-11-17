@@ -19,7 +19,16 @@
 %LOG THE DEAL
 distanceBetweenDealmakers = sqrt( (flightsData(acNr1,14)-flightsData(acNr2,14))^2 +(flightsData(acNr1,15)-flightsData(acNr2,15))^2);
 dealLog = [dealLog; [acNr1, acNr2,potentialFuelSavings,fuelSavingsOffer,potentialFuelSavings, t, Xjoining, Yjoining, distanceBetweenDealmakers]];
-
+if Xjoining < -5*10e3
+    'pause'
+end
+if distanceBetweenDealmakers > 75.2 && distanceBetweenDealmakers < 75.4
+    if flightsData(acNr1,3)==flightsData(acNr2,3) && flightsData(acNr1,4)==flightsData(acNr1,4)
+    same = same+1;
+    else
+        different=different+1;
+    end
+end
 
 % Add the potential fuel savings that are realized now the formation is
 % accepted to the total fuel savings.

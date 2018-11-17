@@ -94,7 +94,7 @@ function flightsInitialData = generateFlights(nAircraft,Vmax,MFuelSolo, ...
 % 29: Column that indicates if this flight (agent) is a Manager or
 % Auctioneer, if 1 = manager / auctioneer if 0 = contractor (so agents are
 % contractors by default)
-
+% 30: Time without a deal
 % 31: Has the agent been in a formation at all?
 
 

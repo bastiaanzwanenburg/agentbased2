@@ -32,12 +32,16 @@ extraFlightTimePctPerRun = zeros(nSimulations,1); % [%]
 
 % Number of aircraft that have been in a formation at all
 flightsInFormation = zeros(nSimulations,1);
+flightsInFormationAlliance = zeros(nSimulations,1);
+flightsInFormationNonAlliance = zeros(nSimulations,1);
 
 totalFuelSavedManagers = zeros(nSimulations,1);
 
 totalFuelSaved = zeros(nSimulations,1);
 
 totalFuelSavedContractors = zeros(nSimulations,1);
+
+distanceBetweenDeal = [];
 
 pctDealsAbove250 = zeros(nSimulations,1);
 pctDealsAbove500 = zeros(nSimulations,1);

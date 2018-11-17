@@ -57,7 +57,7 @@ flightsInFormation(simrun) = length(find(flightsData([1:nAircraft],27)>0))/nAirc
 flightsInAlliance = find(flightsData([1:nAircraft],25)==2);
 flightsNotInAlliance = find(flightsData([1:nAircraft],25)==1);
 flightsInFormationAlliance(simrun) = length(find(flightsData(flightsInAlliance,27)>0))/length(flightsInAlliance);
-flightsInFormationNonAlliance(simrun) = length(find(flightsData(flightsNotInAlliance,27)>0))/length(flightsNotInAlliance);
+flightsInFormationNonAlliance(simrun) = length(find(flightsData(flightsNotInAlliance,27)>0))/nAircraft;
 
 % For the CNP: Fuel saving per manager and contractor
 %if negotiationTechnique == 2
