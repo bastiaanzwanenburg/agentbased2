@@ -7,7 +7,7 @@
 %% Parameters.
 
 % Number of simulation runs.
-nSimulations = 5; 
+nSimulations = 3; 
 
 % Value of the maximum communication distance BETWEEN two aircraft [km]. 
 communicationRange = 500;                                             
@@ -19,7 +19,7 @@ percentageAlliance = 40;
 time_constant = 8;
 
 %Coordination
-coordination=0;
+coordination=1;
 
 % Number of aircraft (only for when creating random flight schedules).
 nAircraft = 100;    
@@ -29,7 +29,7 @@ dt = 300;
 
 % Negotiation technique (1: greedy algorithm, 2: CNP, 3: Dutch, 4: English,
 % 5: Vickrey, 6: Japanese, 7: first-price sealed-bid).
-negotiationTechnique = 2; 
+negotiationTechnique = 7; 
 
 % Visualize the results (0: no visualization, 1: visualization).
 visualizationOption = 0;

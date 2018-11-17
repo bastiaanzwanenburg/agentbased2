@@ -32,7 +32,7 @@ flightsData(flightsArrived,16) = 0;
 
 % Determine which flights are able to communicate.
 communicationCandidates = determineCommunicationCandidates(flightsData, ...
-    communicationRange);
+    communicationRange, coordination);
 
 %% Carry out the negotiation process.
 % Only necessary if there are possible communication candidates.

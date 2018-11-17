@@ -54,11 +54,15 @@ for i = 1:length(communicationCandidates(:,1))
         end
     end
     ratio_auctioneers_bidders = n_auctioneers / (n_auctioneers + n_bidders);
-
     
-    if ratio_auctioneers_bidders < 0.5
+    
+    
+    if flightsData(acNr1,25)==2 && coordination==1
+        flightsData(acNr1,29)=0; %always become bidder
+    elseif ratio_auctioneers_bidders < 0.5
         flightsData(acNr1, 29) = 1; %so this can change every iteration
     end
+    
     
     if flightsData(acNr1,29)==1 %if is auctioneer
         receivedBids = []; %bids: [acNr2, bid]
@@ -78,16 +82,22 @@ for i = 1:length(communicationCandidates(:,1))
                 step1aa_calcTrueValue %acNr1 is auctioneer, acNr2 is bidder
                 if trueValue > 0
                     bid = trueValue*exp(-(nCandidates)/10); %always bid a bit less, how much depends on other agents
+                    
+                    
+                    if flightsData(acNr1,25)==2 && flightsData(acNr2,25)==2
+                        bid = trueValue;
+                    elseif flightsData(acNr1,29)==0 && coordination==1
+                        bid = 0.75*bid;
+                    end
                     receivedBids = [receivedBids; [acNr2, bid, potentialFuelSavings]];
                 end
-                
                 % Update the relevant flight properties for the formation
                 % that is accepted.
                 %step1c_updateProperties
             end
         end
-        %now do the auction itself. 
-       
+        %now do the auction itself.
+        
         if ~isempty(receivedBids)
             %bid continuously goes up, starting at the True Value of an
             %auctioneer
@@ -105,7 +115,7 @@ for i = 1:length(communicationCandidates(:,1))
                 [~, idBestBid] = max(receivedBids(possible_bidders,2));
                 acNrWinner = receivedBids(possible_bidders(idBestBid),1);
                 fuelSavingsOffer = receivedBids(possible_bidders(idBestBid),2);
-           
+                
                 acNr2 = acNrWinner;
                 step1b_routingSynchronizationFuelSavings
                 divisionFutureSavings = flightsData(acNr1,19)/ ...
@@ -116,7 +126,7 @@ for i = 1:length(communicationCandidates(:,1))
             end
         end
         
-       
-      
+        
+        
     end
 end

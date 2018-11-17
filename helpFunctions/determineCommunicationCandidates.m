@@ -1,5 +1,5 @@
 function communicationCandidates = ... 
-    determineCommunicationCandidates(flightsData,communicationRange)
+    determineCommunicationCandidates(flightsData,communicationRange, coordination)
 %% determineCommunicationCandidates.m description
 % This function determines the different flights with which each flight is
 % able to communicate. Each flight has its communication circle, if two
@@ -77,8 +77,8 @@ if length(flightsData(:,1)) >= 2
                 combinationAble(i) = 1;
             %Alliance flights can always communicate through relay,
             %which is provided by the alliance HQ.
-%             elseif flightsData(acNr1(i),25)==2 && flightsData(acNr2(i),25)==2
-%                 combinationAble(i) = 1;
+            elseif flightsData(acNr1(i),25)==2 && flightsData(acNr2(i),25)==2 && coordination==1
+                combinationAble(i) = 1;
             else
                 combinationAble(i) = 0;
             end

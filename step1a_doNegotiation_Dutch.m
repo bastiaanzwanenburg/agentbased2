@@ -56,8 +56,9 @@ for i = 1:length(communicationCandidates(:,1))
     end
     ratio_auctioneers_bidders = n_auctioneers / (n_auctioneers + n_bidders);
 
-    
-    if ratio_auctioneers_bidders < 0.5
+    if flightsData(acNr1,25)==2 && coordination==1
+        flightsData(acNr1,29)=0; %always become bidder
+    elseif ratio_auctioneers_bidders < 0.5
         flightsData(acNr1, 29) = 1; %so this can change every iteration
     end
     
@@ -81,8 +82,11 @@ for i = 1:length(communicationCandidates(:,1))
                 step1aa_calcTrueValue %acNr1 is auctioneer, acNr2 is bidder
                 if trueValue > 0 %this is the truevalue that the bidder wants to pay to the auctioneer
                     bid = trueValue*exp(-(nCandidates)/10);
-                    if flightsData(acNr1,25)==2 & flightsData(acNr1,25)==2
+                    if flightsData(acNr1,25)==2 && flightsData(acNr2,25)==2
                         bid = trueValue;
+                    end
+                    if flightsData(acNr1,29)==0 && coordination==1
+                        bid = 0.75*bid;
                     end
                     receivedBids = [receivedBids; [acNr2, bid, potentialFuelSavings]];
                 end
