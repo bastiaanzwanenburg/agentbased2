@@ -59,19 +59,19 @@ tic
 % Close figures.
 close all
 % Clear all.
-clearvars 
+clearvars
 % Clear command window.
 clear
 % Add paths.
 addpath('helpFunctions')
 addpath('simulationSteps')
 addpath('agentModels')
-addpath('agentModels/CNP') 
-addpath('agentModels/Dutch') 
-addpath('agentModels/English') 
-addpath('agentModels/Vickrey') 
-addpath('agentModels/Japanese') 
-addpath('agentModels/first') 
+addpath('agentModels/CNP')
+addpath('agentModels/Dutch')
+addpath('agentModels/English')
+addpath('agentModels/Vickrey')
+addpath('agentModels/Japanese')
+addpath('agentModels/first')
 
 %% Load parameters, predefine performance indicators.
 
@@ -89,7 +89,7 @@ prep3_performanceIndicators;
 
 %% Create all flight schedules.
 
-% Predefine a 3D matrix to store the flight schedules of the nSimulations. 
+% Predefine a 3D matrix to store the flight schedules of the nSimulations.
 flightsInitialSchedule = zeros(nSimulations,3*nAircraft,31);
 
 for simrunSchedule = 1:nSimulations
@@ -107,62 +107,66 @@ for simrun = 1:nSimulations
     % Remove previously obtained data from the variables.
     clearvars flightsDataRecordings flightsDataReal flightsData dealLog
     dealLog = []; %this could be pre-allocated for better code
-
+    
     simrun
     % Load the initial flight data.
     flightsData = squeeze(flightsInitialSchedule(simrun,:,:));
-
+    
     % Get the initial values into the flight data recorder. This will be
     % used to visualize the results.
     flightsDataRecordings(1,:,:) = flightsData;
     flightsDataReal(1,:,:) = flightsData(1:nAircraft,:);
-
+    
     % Set the time step to 1. This is not a unit of time, but will
     % be used to record the flight data and visualize the results. The
     % size of each time step is dt.
-    t = 1;  
-        
-    % Predefine number of dummy flights used.
-    dummyCounter = 0;   
-    % Predefine total fuel savings. 
-    fuelSavingsTotal = 0;       
+    t = 1;
     
-    % Visualize the origin and destination airports. 
+    % Predefine number of dummy flights used.
+    dummyCounter = 0;
+    % Predefine total fuel savings.
+    fuelSavingsTotal = 0;
+    
+    % Visualize the origin and destination airports.
     if visualizationOption == 1
         final1_visualizeAirports;
-    end                 
-     
+    end
+    
     %% Current simulation run is carried out here.
     
     % Runs while not every real flight has arrived yet (excludes dummy
     % flights).
-    while sum(flightsData(1:nAircraft,18)) < nAircraft                          
+    while sum(flightsData(1:nAircraft,18)) < nAircraft
         % Go through the three steps of the simulation.
         step1_performCommunication;
         step2_moveAircraft;
         step3_determineFormationLeaders;
-
-        % Iterate to the next time step.
-        t = t+1;                                                                
-
-        % Store the data in time step t of the flight recorders.
-        flightsDataRecordings(t,:,:) = flightsData;                                    
-        flightsDataReal(t,:,:) = flightsData(1:nAircraft,:); 
         
-        % Visualize the flights. 
+        % Iterate to the next time step.
+        t = t+1;
+        
+        % Store the data in time step t of the flight recorders.
+        flightsDataRecordings(t,:,:) = flightsData;
+        flightsDataReal(t,:,:) = flightsData(1:nAircraft,:);
+        
+        % Visualize the flights.
         if visualizationOption == 1
             final2_visualizeFlights;
         end
     end
-
+    
     %% Store performance indicators of current simulation run.
     % Calculate the realized fuel savings, the extra flight time due to
     % formation flying, and the extra distance flown due to formation
     % flying.
     final3_concludeSimulation;
 end
+
 pctFuelSavedContractors = transpose(pctFuelSavedContractors);
 pctFuelSavedManagers = transpose(pctFuelSavedManagers);
-a = [extraDistancePctPerRun, extraFlightTimePctPerRun,flightsInFormation,fuelSavingsAlliancePctPerRun,fuelSavingsNonAlliancePctPerRun,pctFuelSavedContractors,pctFuelSavedManagers,totalFuelSaved,totalFuelSavedContractors,totalFuelSavedManagers];
+% concatenate the performance indicators for easy export to excel
+% a = [extraDistancePctPerRun, extraFlightTimePctPerRun,flightsInFormation,fuelSavingsAlliancePctPerRun,fuelSavingsNonAlliancePctPerRun,pctFuelSavedContractors,pctFuelSavedManagers,totalFuelSaved,totalFuelSavedContractors,totalFuelSavedManagers];
 
-toc
+
+[N,C] = hist3([dealLogRecordings(:,7), dealLogRecordings(:,8)],[15,15]);
+contourf(C{1},C{2},N);

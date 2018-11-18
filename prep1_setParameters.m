@@ -7,10 +7,10 @@
 %% Parameters.
 
 % Number of simulation runs.
-nSimulations = 5; 
+nSimulations = 50; 
 
 % Value of the maximum communication distance BETWEEN two aircraft [km]. 
-communicationRange = 500;                                             
+communicationRange = 750;                                             
 
 % Percentage of aircraft in simulation that are part of the alliance [%].
 percentageAlliance = 100;  
@@ -18,7 +18,7 @@ percentageAlliance = 100;
 %Time constant (?)
 time_constant = 8;
 
-%Coordination
+%Coordination, 0=off, 1=on.
 coordination=0;
 
 % Number of aircraft (only for when creating random flight schedules).
@@ -33,9 +33,6 @@ negotiationTechnique = 2;
 
 % Visualize the results (0: no visualization, 1: visualization).
 visualizationOption = 0;
-
-same=0;
-different=0;
 
 % Fix the seed of the random number generator (RNG). If fixed, the same
 % random flight schedules ('nSimulations' schedules in total) will be

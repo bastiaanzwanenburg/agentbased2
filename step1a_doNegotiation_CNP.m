@@ -176,7 +176,8 @@ for i = 1:length(communicationCandidates(:,1))
             %we stored all sync info in the bidbook, get that.
             divisionFutureSavings = bidbook(acNr2,3);   
             if accept_deal == 1
-                step1b_routingSynchronizationFuelSavings %This is sloppy coding, as all data is already in the bidbook. However, removing this line would only lead to 5% less calls to this function, as many more potential bids are analysed, than actual bids. Therefore it is OK for now. 
+                step1b_routingSynchronizationFuelSavings %This is sloppy coding, as all data is already in the bidbook...
+                % ... However, removing this line would only lead to 5% less calls to this function, as many more potential bids are analysed, than actual bids. Therefore it is OK for now.
                 if potentialFuelSavings > 0
                     step1c_updateProperties %update the deal properties
                     bidbook(acNr2,:) = 0; %ditch all bids made by acNr2
@@ -184,9 +185,8 @@ for i = 1:length(communicationCandidates(:,1))
                     flightsData(acNr1,30) = 0;
                     flightsData(acNr2,30) = 0;
                 else
-                    bidbook(acNr2,:)=0; %Apparently, this was a bad deal, so discard it.
+                    bidbook(acNr2,:)=0; %Apparently, this was a bad deal, so discard it. This is to prevent edge-cases that happen more-or-less once in every 50 simulations. These are caused by deals that have been in the bidbook for a long time and have become inviable since their making. 
                 end
-                %Log that this aircraft has been in a formation
             end
         end
                    

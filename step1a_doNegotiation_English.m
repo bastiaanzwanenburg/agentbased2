@@ -63,8 +63,9 @@ for i = 1:length(communicationCandidates(:,1))
         flightsData(acNr1, 29) = 1; %so this can change every iteration
     end
     
-    %%Start deal-making process: so we only simulate the auctioneer, who
-    %%asks every bidder in his proximity
+    %% Start deal-making process: so we only simulate the auctioneer, who
+    % asks every bidder in his proximity to make a bid.
+    
     if flightsData(acNr1,29)==1 %if is auctioneer
         receivedBids = []; %bids: [acNr2, bid]
         
@@ -82,7 +83,7 @@ for i = 1:length(communicationCandidates(:,1))
                 valueForBidder = 1;
                 step1aa_calcTrueValue %acNr1 is auctioneer, acNr2 is bidder
                 if trueValue > 0 %this is the truevalue that the bidder wants to pay to the auctioneer
-                    bid = trueValue*exp(-(nCandidates)/10);
+                    bid = trueValue*exp(-(nCandidates)/10); %the bid depends on nearby candidates.
                     
                     if flightsData(acNr1,25)==2 && flightsData(acNr2,25)==2
                         bid = trueValue;
@@ -91,9 +92,6 @@ for i = 1:length(communicationCandidates(:,1))
                     end
                     receivedBids = [receivedBids; [acNr2, bid, potentialFuelSavings]];
                 end
-                % Update the relevant flight properties for the formation
-                % that is accepted.
-                %step1c_updateProperties
             end
         end
         %now do the auction itself.
@@ -128,7 +126,7 @@ for i = 1:length(communicationCandidates(:,1))
                         
                     elseif length(possible_bidders) > 1 %more than 1 remaining bidder, so increase auctino value
                         auction_value = (auction_value+10)*1.05; %+1 to get away from 0.
-                    else %this should never happen, but if it happens, cut the while loop
+                    else %this never happens, but if it happens, cut the while loop
                         auction_value = -1;
                     end
                 end

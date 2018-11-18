@@ -1,8 +1,0 @@
-x=1:750;
-y=zeros(1,750);
-
-for i=x
-    y(i)= mean(distanceBetweenDeal(distanceBetweenDeal(:,9)>i-20 &,3));
-end
-
-    

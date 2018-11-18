@@ -39,12 +39,10 @@ for i = 1:length(communicationCandidates(:,1))
     flightsData(acNr1,30)=flightsData(acNr1,30)+1;
     % Determine the number of communication candidates for flight i.
     nCandidates = nnz(communicationCandidates(i,2:end));
-    
+    %% Determine whether to become auctioneer or bidder
     n_auctioneers = 0;
     n_bidders = 0;
 
-    
-    %%Determine auctioneer/bidder ratio
     for j = 2:nCandidates+1
         acNr2 = communicationCandidates(i,j);
         
@@ -54,16 +52,19 @@ for i = 1:length(communicationCandidates(:,1))
             n_bidders = n_bidders + 1;
         end
     end
+    
     ratio_auctioneers_bidders = n_auctioneers / (n_auctioneers + n_bidders);
 
     if flightsData(acNr1,25)==2 && coordination==1
-        flightsData(acNr1,29)=0; %always become bidder
+        flightsData(acNr1,29)=0; %alliance agents always become bidders if coordination is on
     elseif ratio_auctioneers_bidders < 0.5
-        flightsData(acNr1, 29) = 1; %so this can change every iteration
+        flightsData(acNr1, 29) = 1; %otherwise, just look at other agents in communication range
     end
     
-    %%Start deal-making process: so we only simulate the auctioneer, who
-    %%asks every bidder in his proximity 
+    %% Start deal-making process: so we only simulate the auctioneer, who ...
+    % asks every bidder in his proximity what he wants to bid, and then
+    % makes a deal.
+    
     if flightsData(acNr1,29)==1 %if is auctioneer
         receivedBids = []; %bids: [acNr2, bid]
         
@@ -78,9 +79,11 @@ for i = 1:length(communicationCandidates(:,1))
                 % This file contains code to perform the routing and
                 % synchronization, and to determine the potential fuel
                 % savings.
-                valueForBidder = 1;
+                
+                % Calculate true value for the bidder, and consecutively
+                % the actual bid.
                 step1aa_calcTrueValue %acNr1 is auctioneer, acNr2 is bidder
-                if trueValue > 0 %this is the truevalue that the bidder wants to pay to the auctioneer
+                if trueValue > 0 
                     bid = trueValue*exp(-(nCandidates)/10);
                     if flightsData(acNr1,25)==2 && flightsData(acNr2,25)==2
                         bid = trueValue;
@@ -88,12 +91,15 @@ for i = 1:length(communicationCandidates(:,1))
                     if flightsData(acNr1,29)==0 && coordination==1
                         bid = 0.75*bid;
                     end
+                    % store the bid
                     receivedBids = [receivedBids; [acNr2, bid, potentialFuelSavings]];
                 end
                 
             end
         end
-        %now do the auction itself. 
+        
+        %now do the auction itself, but only if the auctioneer has received
+        %any bids.
        
         if ~isempty(receivedBids)
             
@@ -103,25 +109,30 @@ for i = 1:length(communicationCandidates(:,1))
             averageFuelSavings = mean(receivedBids(:,3));
             minimum_bid = averageFuelSavings*pctTrueValueAuctioneer;
             
+            % the auction starts at 10x the time of the minimum bid
             auction_value = 10*minimum_bid;
+            
+            % and goes on until the auctioneer has reached its minimum
+            % value. 
             
             while minimum_bid <= auction_value
                 possible_bidders = find(receivedBids(:,2)>auction_value);
-                if ~isempty(possible_bidders) %if not empty
-                    winner = receivedBids(possible_bidders,1);
-                    acNr2 = winner(1); %if there is more than 1 bidder meeting the value; arbitrarliy accept the value
+                
+                if ~isempty(possible_bidders) %if there are bidders who've bid at least the auction value
+                    winner = receivedBids(possible_bidders,1); %then the highest bid wins
+                    acNr2 = winner(1); %in case of a tie, make an arbitrary split
                     fuelSavingsOffer = auction_value;
-                    auction_value = -1; %to stop the auction(while)
+                    auction_value = -1; %to stop the auction (while loop)
                     
-                    step1b_routingSynchronizationFuelSavings
+                    step1b_routingSynchronizationFuelSavings %once again find deal properties
                     divisionFutureSavings = flightsData(acNr1,19)/ ...
-                        (flightsData(acNr1,19) + flightsData(acNr2,19));
-                    step1c_updateProperties
-                    flightsData(acNr1,30)=0;
+                        (flightsData(acNr1,19) + flightsData(acNr2,19)); 
+                    step1c_updateProperties %and make the actual dela
+                    flightsData(acNr1,30)=0; 
                     flightsData(acNr2,30)=0;
                     
                 end
-                auction_value = auction_value*0.95;
+                auction_value = auction_value*0.95; %decrease the auction value by an increment.
             end
         end
         

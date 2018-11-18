@@ -1,5 +1,5 @@
 %% step1a_doNegotiation_Japanese.m description
-% Add your English agent models and edit this file to create your English
+% Add your Japanese agent models and edit this file to create your Japanese
 % auction.
 
 % This file uses the matrix generated in determineCommunicationCandidates.m
@@ -40,11 +40,12 @@ for i = 1:length(communicationCandidates(:,1))
     % Determine the number of communication candidates for flight i.
     nCandidates = nnz(communicationCandidates(i,2:end));
     
+    %% Determine auctioneer/bidder ratio
+    
     n_auctioneers = 0;
     n_bidders = 0;
-
     
-    %%Determine auctioneer/bidder ratio
+    
     for j = 2:nCandidates+1
         acNr2 = communicationCandidates(i,j);
         
@@ -55,7 +56,7 @@ for i = 1:length(communicationCandidates(:,1))
         end
     end
     ratio_auctioneers_bidders = n_auctioneers / (n_auctioneers + n_bidders);
-
+    
     
     if flightsData(acNr1,25)==2 && coordination==1
         flightsData(acNr1,29)=0; %always become bidder
@@ -63,8 +64,8 @@ for i = 1:length(communicationCandidates(:,1))
         flightsData(acNr1, 29) = 1; %so this can change every iteration
     end
     
-    %%Start deal-making process: so we only simulate the auctioneer, who
-    %%asks every bidder in his proximity 
+    %% Start deal-making process: so we only simulate the auctioneer, who
+    % asks every bidder in his proximity
     if flightsData(acNr1,29)==1 %if is auctioneer
         receivedBids = []; %bids: [acNr2, bid]
         
@@ -90,13 +91,10 @@ for i = 1:length(communicationCandidates(:,1))
                     end
                     receivedBids = [receivedBids; [acNr2, bid, potentialFuelSavings]];
                 end
-                % Update the relevant flight properties for the formation
-                % that is accepted.
-                %step1c_updateProperties
             end
         end
-        %now do the auction itself. 
-       
+        
+        %now do the auction itself.
         if ~isempty(receivedBids)
             
             valueForBidder = 0; %this is an input for calcTrueValue --> so it will see acnr1 as auctioneer
@@ -104,7 +102,7 @@ for i = 1:length(communicationCandidates(:,1))
             averageFuelSavings = mean(receivedBids(:,3));
             minimum_bid = averageFuelSavings*pctTrueValueAuctioneer;
             auction_value = minimum_bid;
-
+            
             
             while minimum_bid <= auction_value
                 possible_bidders = find(receivedBids(:,2)>auction_value);
@@ -123,15 +121,12 @@ for i = 1:length(communicationCandidates(:,1))
                     flightsData(acNr1,30)=0;
                     flightsData(acNr2,30)=0;
                     
-                elseif length(possible_bidders) > 1 %more than 1 remaining bidder, so increase auctino value 
+                elseif length(possible_bidders) > 1 %more than 1 remaining bidder, so increase auctino value
                     auction_value = (auction_value+5)*1.05;
                 else
                     auction_value = -1;
                 end
             end
         end
-        
-       
-      
     end
 end

@@ -1,5 +1,5 @@
 %% step1a_doNegotiation_First.m description
-% Add your Vickrey agent models and edit this file to create your English
+% Add your First agent models and edit this file to create your First
 % auction.
 
 % This file uses the matrix generated in determineCommunicationCandidates.m
@@ -40,6 +40,7 @@ for i = 1:length(communicationCandidates(:,1))
     % Determine the number of communication candidates for flight i.
     nCandidates = nnz(communicationCandidates(i,2:end));
     
+    %% Start determination of who becomes manager/bidder
     n_auctioneers = 0;
     n_bidders = 0;
     
@@ -55,8 +56,7 @@ for i = 1:length(communicationCandidates(:,1))
     end
     ratio_auctioneers_bidders = n_auctioneers / (n_auctioneers + n_bidders);
     
-    
-    
+
     if flightsData(acNr1,25)==2 && coordination==1
         flightsData(acNr1,29)=0; %always become bidder
     elseif ratio_auctioneers_bidders < 0.5

@@ -35,13 +35,17 @@ flightsInFormation = zeros(nSimulations,1);
 flightsInFormationAlliance = zeros(nSimulations,1);
 flightsInFormationNonAlliance = zeros(nSimulations,1);
 
+% Fuel saved by managers and contractors. (For auctions: manager =
+% auctioneer)
+
 totalFuelSavedManagers = zeros(nSimulations,1);
 
 totalFuelSaved = zeros(nSimulations,1);
 
 totalFuelSavedContractors = zeros(nSimulations,1);
 
-distanceBetweenDeal = [];
+% Databook in which all deals made across all simulations are logged
+dealLogRecordings = [];
 
 pctDealsAbove250 = zeros(nSimulations,1);
 pctDealsAbove500 = zeros(nSimulations,1);
